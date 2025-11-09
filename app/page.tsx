@@ -96,12 +96,12 @@ export default function HomePage() {
     doc.text('BSIT-4 | Website Development | Full Stack Development', 105, yPos, { align: 'center' });
     yPos += 15;
 
-    const sections = ['Education', 'Skills', 'Experience', 'Certifications'];
+    const sections = ['education', 'skills', 'experience', 'certifications'];
     sections.forEach(section => {
-      const items = resumeData.filter(item => item.section === section);
+      const items = resumeData.filter(item => item.section.toLowerCase() === section);
       if (items.length > 0) {
         doc.setFontSize(16);
-        doc.text(section, 20, yPos);
+        doc.text(section.charAt(0).toUpperCase() + section.slice(1), 20, yPos);
         yPos += 8;
 
         items.forEach(item => {
@@ -150,17 +150,20 @@ export default function HomePage() {
   };
 
   const groupedData = resumeData.reduce((acc, item) => {
-    if (!acc[item.section]) acc[item.section] = [];
-    acc[item.section].push(item);
+    // Capitalize first letter of section for display
+    const sectionKey = item.section.charAt(0).toUpperCase() + item.section.slice(1);
+    if (!acc[sectionKey]) acc[sectionKey] = [];
+    acc[sectionKey].push(item);
     return acc;
   }, {} as Record<string, ResumeItem[]>);
 
   const getSectionIcon = (section: string) => {
-    switch (section) {
-      case 'Education': return <GraduationCap size={24} />;
-      case 'Skills': return <Code size={24} />;
-      case 'Experience': return <Briefcase size={24} />;
-      case 'Certifications': return <Award size={24} />;
+    const lowerSection = section.toLowerCase();
+    switch (lowerSection) {
+      case 'education': return <GraduationCap size={24} />;
+      case 'skills': return <Code size={24} />;
+      case 'experience': return <Briefcase size={24} />;
+      case 'certifications': return <Award size={24} />;
       default: return null;
     }
   };
