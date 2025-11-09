@@ -1,6 +1,6 @@
-# Portfolio & Resume System with LMS and AI Digital Twin
+# Portfolio & Resume System with AI Digital Twin
 
-A comprehensive Next.js application featuring a professional portfolio, resume system, Learning Management System (LMS), and an AI-powered digital twin using the OpenAI API.
+A comprehensive Next.js application featuring a professional portfolio, resume system, and an AI-powered digital twin with voice and chat capabilities.
 
 ## 🎨 Design System
 
@@ -43,22 +43,14 @@ A comprehensive Next.js application featuring a professional portfolio, resume s
 - "Ask My Twin" feature for each project
 - Interactive voice explanations
 
-### 4. **LMS (Learning Management System)**
-- Course dashboard with progress tracking
-- Visual progress bars
-- Ongoing and completed courses sections
-- AI mentor for course guidance
-- Course completion system
-- Quiz support (schema ready)
-
-### 5. **Contact Page**
+### 4. **Contact Page**
 - Contact form with validation
 - Message storage in MySQL
 - "Talk to My Twin" voice feature
 - Contact information display
 - Real-time form submission
 
-### 6. **AI Digital Twin (Voice AI)**
+### 5. **AI Digital Twin (Voice & Chat)**
 - Powered by OpenAI API
 - Natural language voice interaction
 - Context-aware responses
