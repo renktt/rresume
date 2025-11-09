@@ -1,4 +1,4 @@
-import prisma from '@/lib/db';
+import { redisHelpers } from '@/lib/redis';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -13,12 +13,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const contactMessage = await prisma.contactMessage.create({
-      data: {
-        name,
-        email,
-        message,
-      },
+    const contactMessage = await redisHelpers.addContactMessage({
+      name,
+      email,
+      message,
     });
 
     return NextResponse.json(contactMessage, { status: 201 });
@@ -33,11 +31,14 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const messages = await prisma.contactMessage.findMany({
-      orderBy: { createdAt: 'desc' },
+    const messages: any = await redisHelpers.getContactMessages();
+    
+    // Sort by createdAt descending
+    const sorted = messages.sort((a: any, b: any) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-    return NextResponse.json(messages);
+    return NextResponse.json(sorted);
   } catch (error) {
     console.error('Error fetching contact messages:', error);
     return NextResponse.json(

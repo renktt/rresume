@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { RENANTE_PROFILE } from '@/lib/digital-twin-personality';
-import prisma from '@/lib/db';
+import { redisHelpers } from '@/lib/redis';
 
 // Smart response generator based on message content
 async function generateContextualResponse(message: string, context?: string): Promise<string> {
@@ -20,9 +20,16 @@ async function generateContextualResponse(message: string, context?: string): Pr
   
   try {
     [resumeData, projectsData] = await Promise.all([
-      prisma.resume.findMany({ orderBy: [{ section: 'asc' }, { order: 'asc' }] }),
-      prisma.project.findMany({ orderBy: { createdAt: 'desc' } })
+      redisHelpers.getResume(),
+      redisHelpers.getProjects()
     ]);
+    // Sort resume by section and order
+    resumeData.sort((a, b) => {
+      if (a.section !== b.section) return a.section.localeCompare(b.section);
+      return a.order - b.order;
+    });
+    // Sort projects by createdAt descending
+    projectsData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   } catch (error) {
     console.log('Database fetch skipped:', error);
   }

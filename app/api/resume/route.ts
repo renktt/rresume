@@ -1,16 +1,19 @@
-import prisma from '@/lib/db';
+import { redisHelpers } from '@/lib/redis';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const resumeData = await prisma.resume.findMany({
-      orderBy: [
-        { section: 'asc' },
-        { order: 'asc' },
-      ],
+    const resumeData: any = await redisHelpers.getResume();
+    
+    // Sort by section and order
+    const sorted = resumeData.sort((a: any, b: any) => {
+      if (a.section === b.section) {
+        return (a.order || 0) - (b.order || 0);
+      }
+      return a.section.localeCompare(b.section);
     });
 
-    return NextResponse.json(resumeData);
+    return NextResponse.json(sorted);
   } catch (error) {
     console.error('Error fetching resume data:', error);
     return NextResponse.json(
@@ -25,14 +28,12 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { section, title, description, dateRange, order } = body;
 
-    const resumeItem = await prisma.resume.create({
-      data: {
-        section,
-        title,
-        description,
-        dateRange,
-        order: order || 0,
-      },
+    const resumeItem = await redisHelpers.addResumeItem({
+      section,
+      title,
+      description,
+      dateRange,
+      order: order || 0,
     });
 
     return NextResponse.json(resumeItem, { status: 201 });

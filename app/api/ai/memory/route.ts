@@ -1,4 +1,4 @@
-import prisma from '@/lib/db';
+import { redisHelpers } from '@/lib/redis';
 import { NextResponse } from 'next/server';
 
 // GET - Retrieve conversation history for a session
@@ -16,21 +16,20 @@ export async function GET(req: Request) {
     }
 
     // Get recent chat messages
-    const messages = await prisma.chatMessage.findMany({
-      where: { sessionId },
-      orderBy: { timestamp: 'desc' },
-      take: limit,
-    });
+    const allMessages: any = await redisHelpers.getChatMessages(sessionId);
+    const messages = allMessages
+      .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, limit)
+      .reverse(); // Oldest first for display
 
     // Get AI memory context
-    const memory = await prisma.aiMemory.findMany({
-      where: { sessionId },
-      orderBy: { lastInteraction: 'desc' },
-      take: 5,
-    });
+    const allMemory: any = await redisHelpers.getAiMemory(sessionId);
+    const memory = allMemory
+      .sort((a: any, b: any) => new Date(b.lastInteraction).getTime() - new Date(a.lastInteraction).getTime())
+      .slice(0, 5);
 
     return NextResponse.json({
-      messages: messages.reverse(), // Oldest first for display
+      messages,
       memory,
     });
   } catch (error) {
@@ -59,26 +58,22 @@ export async function POST(req: Request) {
 
     // Store in AI memory for context tracking
     if (message && response) {
-      await prisma.aiMemory.create({
-        data: {
-          userId: userId || 'anonymous',
-          sessionId,
-          conversationType,
-          message,
-          response,
-          context: context ? JSON.stringify(context) : null,
-        },
+      await redisHelpers.addAiMemory(sessionId, {
+        userId: userId || 'anonymous',
+        sessionId,
+        conversationType,
+        message,
+        response,
+        context: context ? JSON.stringify(context) : null,
       });
     }
 
     // Store in chat messages for conversation history
     if (role && content) {
-      await prisma.chatMessage.create({
-        data: {
-          sessionId,
-          role,
-          content,
-        },
+      await redisHelpers.addChatMessage(sessionId, {
+        sessionId,
+        role,
+        content,
       });
     }
 
@@ -105,10 +100,7 @@ export async function DELETE(req: Request) {
       );
     }
 
-    await prisma.$transaction([
-      prisma.chatMessage.deleteMany({ where: { sessionId } }),
-      prisma.aiMemory.deleteMany({ where: { sessionId } }),
-    ]);
+    await redisHelpers.clearChatMessages(sessionId);
 
     return NextResponse.json({ success: true });
   } catch (error) {
