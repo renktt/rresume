@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { RENANTE_PROFILE } from '@/lib/digital-twin-personality';
+import prisma from '@/lib/db';
 
 // Smart response generator based on message content
-function generateContextualResponse(message: string, context?: string): string {
+async function generateContextualResponse(message: string, context?: string): Promise<string> {
   const lowerMessage = message.toLowerCase();
   
   // Get all skills as flat array
@@ -13,29 +14,93 @@ function generateContextualResponse(message: string, context?: string): string {
     ...RENANTE_PROFILE.skills.ai
   ];
   
+  // Fetch real data from database
+  let resumeData: any[] = [];
+  let projectsData: any[] = [];
+  
+  try {
+    [resumeData, projectsData] = await Promise.all([
+      prisma.resume.findMany({ orderBy: [{ section: 'asc' }, { order: 'asc' }] }),
+      prisma.project.findMany({ orderBy: { createdAt: 'desc' } })
+    ]);
+  } catch (error) {
+    console.log('Database fetch skipped:', error);
+  }
+  
   // Greeting responses
   if (lowerMessage.match(/^(hi|hello|hey|greetings|good morning|good afternoon|good evening)/)) {
     return `Hello! I'm Renante's Digital Twin. I'm a ${RENANTE_PROFILE.title} passionate about ${RENANTE_PROFILE.interests.join(', ')}. How can I help you learn more about my skills and experience?`;
   }
   
   // Skills questions
-  if (lowerMessage.includes('skill') || lowerMessage.includes('technology') || lowerMessage.includes('tech stack')) {
-    return `I have expertise in:\n• Frontend: ${RENANTE_PROFILE.skills.frontend.join(', ')}\n• Backend: ${RENANTE_PROFILE.skills.backend.join(', ')}\n• Database: ${RENANTE_PROFILE.skills.database.join(', ')}\n• AI: ${RENANTE_PROFILE.skills.ai.join(', ')}\n\nI'm particularly skilled in building full-stack web applications. Would you like to know more about any specific technology?`;
+  if (lowerMessage.includes('skill') || lowerMessage.includes('technology') || lowerMessage.includes('tech stack') || lowerMessage.includes('what can you do')) {
+    const skillsFromDb = resumeData.filter(item => item.section === 'skills');
+    let skillsText = `I have comprehensive expertise in:\n\n• **Frontend**: ${RENANTE_PROFILE.skills.frontend.join(', ')}\n• **Backend**: ${RENANTE_PROFILE.skills.backend.join(', ')}\n• **Database**: ${RENANTE_PROFILE.skills.database.join(', ')}\n• **AI/ML**: ${RENANTE_PROFILE.skills.ai.join(', ')}\n• **Tools**: ${RENANTE_PROFILE.skills.tools.join(', ')}`;
+    
+    if (skillsFromDb.length > 0) {
+      skillsText += `\n\n**Highlighted Skills:**\n` + skillsFromDb.map(skill => `• ${skill.title}: ${skill.description}`).join('\n');
+    }
+    
+    skillsText += `\n\nI'm particularly skilled in building full-stack web applications with modern technologies. I've applied these skills across ${projectsData.length} projects. Would you like to know more about any specific technology or see my projects?`;
+    return skillsText;
   }
   
   // Education questions
-  if (lowerMessage.includes('education') || lowerMessage.includes('school') || lowerMessage.includes('study') || lowerMessage.includes('degree')) {
-    return `I'm currently a ${RENANTE_PROFILE.title}. I'm specializing in ${RENANTE_PROFILE.specialization}. My current focus includes: ${RENANTE_PROFILE.currentFocus.join(', ')}. I have a strong foundation in modern web technologies and full-stack development!`;
+  if (lowerMessage.includes('education') || lowerMessage.includes('school') || lowerMessage.includes('study') || lowerMessage.includes('degree') || lowerMessage.includes('university') || lowerMessage.includes('college')) {
+    const education = resumeData.filter(item => item.section === 'education');
+    let response = `I'm currently a ${RENANTE_PROFILE.title}, specializing in ${RENANTE_PROFILE.specialization}.`;
+    
+    if (education.length > 0) {
+      response += `\n\n**My Educational Background:**\n` + education.map(edu => `• **${edu.title}** (${edu.dateRange})\n  ${edu.description}`).join('\n\n');
+    }
+    
+    response += `\n\n**Current Focus:**\n` + RENANTE_PROFILE.currentFocus.map(focus => `• ${focus}`).join('\n');
+    response += `\n\nI have a strong foundation in modern web technologies and full-stack development, constantly learning and applying new skills through hands-on projects!`;
+    return response;
   }
   
   // Projects questions
-  if (lowerMessage.includes('project') || lowerMessage.includes('portfolio') || lowerMessage.includes('built') || lowerMessage.includes('created')) {
-    return `I've built several impressive projects including:\n• This portfolio system with an AI Digital Twin\n• Full-stack web applications with MySQL databases\n• AI-powered features with voice and chat capabilities\n• Responsive and modern web interfaces\n\nCheck out the Projects page to see my work in detail, including live demos and GitHub repositories!`;
+  if (lowerMessage.includes('project') || lowerMessage.includes('portfolio') || lowerMessage.includes('built') || lowerMessage.includes('created') || lowerMessage.includes('work') || lowerMessage.includes('developed')) {
+    let response = `I've built **${projectsData.length} impressive projects** showcasing my full-stack development skills:`;
+    
+    if (projectsData.length > 0) {
+      response += `\n\n**Featured Projects:**\n`;
+      projectsData.slice(0, 5).forEach((project, index) => {
+        response += `\n${index + 1}. **${project.title}**\n   ${project.description}\n   **Tech Stack:** ${project.techStack}`;
+        if (project.githubLink) response += `\n   [GitHub](${project.githubLink})`;
+        if (project.demoLink) response += ` | [Live Demo](${project.demoLink})`;
+        response += `\n`;
+      });
+      
+      if (projectsData.length > 5) {
+        response += `\n...and ${projectsData.length - 5} more projects!`;
+      }
+    } else {
+      response += `\n• This portfolio system with an AI Digital Twin\n• Full-stack web applications with MySQL databases\n• AI-powered features with voice and chat capabilities\n• Responsive and modern web interfaces`;
+    }
+    
+    response += `\n\nEach project demonstrates my ability to build complete, production-ready applications. Check out the Projects page to see detailed information, live demos, and GitHub repositories!`;
+    return response;
   }
   
   // Resume questions
-  if (lowerMessage.includes('resume') || lowerMessage.includes('experience') || lowerMessage.includes('work')) {
-    return `My resume showcases my education, technical skills, and project experience. I have hands-on experience with: ${allSkills.slice(0, 6).join(', ')}, and more! Visit the Resume page to see all the details about my qualifications and achievements.`;
+  if (lowerMessage.includes('resume') || lowerMessage.includes('experience') || lowerMessage.includes('qualification') || lowerMessage.includes('background')) {
+    const experience = resumeData.filter(item => item.section === 'experience');
+    const certifications = resumeData.filter(item => item.section === 'certifications');
+    
+    let response = `My resume showcases my comprehensive background in web development and technology:`;
+    
+    if (experience.length > 0) {
+      response += `\n\n**Professional Experience:**\n` + experience.map(exp => `• **${exp.title}** (${exp.dateRange})\n  ${exp.description}`).join('\n\n');
+    }
+    
+    if (certifications.length > 0) {
+      response += `\n\n**Certifications & Achievements:**\n` + certifications.map(cert => `• ${cert.title} - ${cert.description}`).join('\n');
+    }
+    
+    response += `\n\n**Core Competencies:**\n` + allSkills.slice(0, 8).map(skill => `• ${skill}`).join('\n');
+    response += `\n\nWith ${projectsData.length} completed projects and strong academic foundation, I bring both theoretical knowledge and practical experience. Visit the Resume page to download my full CV and see detailed information about my qualifications!`;
+    return response;
   }
   
   // Learning questions
@@ -94,7 +159,7 @@ export async function POST(req: Request) {
     }
 
     // Generate contextual response based on message content
-    const response = generateContextualResponse(message, context);
+    const response = await generateContextualResponse(message, context);
 
     // Store in memory (if database is available)
     try {
