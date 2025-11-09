@@ -12,10 +12,16 @@
   body {
     @apply bg-background text-gray-900 font-sans;
     transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden;
   }
 
   body.dark {
     @apply bg-dark-background text-gray-100;
+  }
+
+  /* Smooth scrolling for sections */
+  section {
+    scroll-margin-top: 4rem;
   }
 }
 
