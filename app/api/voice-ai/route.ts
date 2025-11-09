@@ -25,7 +25,7 @@ function generateVoiceResponse(message: string, context?: string): string {
   
   // Projects
   if (lowerMessage.includes('project') || lowerMessage.includes('portfolio')) {
-    return `I've built several projects including this portfolio system with an AI Digital Twin, a Learning Management System, and various full-stack applications. Check out the Projects page to see my work!`;
+    return `I've built several projects including this portfolio system with an AI Digital Twin, and various full-stack applications. Check out the Projects page to see my work!`;
   }
   
   // Education

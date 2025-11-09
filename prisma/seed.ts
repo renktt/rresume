@@ -60,7 +60,7 @@ async function main() {
     data: [
       {
         title: 'Portfolio & Resume System with AI',
-        description: 'A comprehensive portfolio website featuring an AI-powered digital twin, LMS integration, and dynamic resume management. Built with Next.js and OpenAI API.',
+        description: 'A comprehensive portfolio website featuring an AI-powered digital twin and dynamic resume management. Built with Next.js and OpenAI API.',
         techStack: 'Next.js, TypeScript, Tailwind CSS, MySQL, Prisma, OpenAI',
         githubLink: 'https://github.com/username/portfolio',
         demoLink: 'https://portfolio-demo.vercel.app',
@@ -88,53 +88,6 @@ async function main() {
         githubLink: 'https://github.com/username/weather-dashboard',
         demoLink: 'https://weather-demo.vercel.app',
         featured: false,
-      },
-    ],
-  });
-
-  // Seed Courses
-  console.log('📚 Seeding courses...');
-  await prisma.course.createMany({
-    data: [
-      {
-        title: 'Full Stack Web Development',
-        description: 'Complete course covering HTML, CSS, JavaScript, React, Node.js, databases, and deployment strategies.',
-        progress: 75,
-        completed: false,
-        duration: '40 hours',
-        level: 'Intermediate',
-      },
-      {
-        title: 'React Advanced Patterns',
-        description: 'Deep dive into advanced React patterns including hooks, context, performance optimization, and best practices.',
-        progress: 100,
-        completed: true,
-        duration: '20 hours',
-        level: 'Advanced',
-      },
-      {
-        title: 'Database Design & Optimization',
-        description: 'Learn to design efficient database schemas, write optimized queries, and implement proper indexing strategies.',
-        progress: 50,
-        completed: false,
-        duration: '15 hours',
-        level: 'Intermediate',
-      },
-      {
-        title: 'TypeScript Fundamentals',
-        description: 'Master TypeScript from basics to advanced topics including types, interfaces, generics, and decorators.',
-        progress: 100,
-        completed: true,
-        duration: '12 hours',
-        level: 'Beginner',
-      },
-      {
-        title: 'AI Integration for Developers',
-        description: 'Learn to integrate AI capabilities into web applications using OpenAI API, embeddings, and vector databases.',
-        progress: 30,
-        completed: false,
-        duration: '25 hours',
-        level: 'Advanced',
       },
     ],
   });

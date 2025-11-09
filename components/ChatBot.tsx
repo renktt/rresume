@@ -47,7 +47,7 @@ export default function ChatBot({ context }: ChatBotProps) {
       setMessages([
         {
           role: 'assistant',
-          content: "👋 Hello! I'm Renante's Digital Twin. I can answer questions about his background, skills, projects, or help guide you through the LMS. How can I help you today?",
+          content: "👋 Hello! I'm Renante's Digital Twin. I can answer questions about his background, skills, projects, or experience. How can I help you today?",
           timestamp: new Date(),
         },
       ]);

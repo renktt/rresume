@@ -30,7 +30,7 @@ function generateContextualResponse(message: string, context?: string): string {
   
   // Projects questions
   if (lowerMessage.includes('project') || lowerMessage.includes('portfolio') || lowerMessage.includes('built') || lowerMessage.includes('created')) {
-    return `I've built several impressive projects including:\n• This portfolio system with an AI Digital Twin\n• A Learning Management System (LMS)\n• Full-stack web applications with MySQL databases\n• AI-powered features with voice and chat capabilities\n\nCheck out the Projects page to see my work in detail, including live demos and GitHub repositories!`;
+    return `I've built several impressive projects including:\n• This portfolio system with an AI Digital Twin\n• Full-stack web applications with MySQL databases\n• AI-powered features with voice and chat capabilities\n• Responsive and modern web interfaces\n\nCheck out the Projects page to see my work in detail, including live demos and GitHub repositories!`;
   }
   
   // Resume questions
@@ -38,9 +38,9 @@ function generateContextualResponse(message: string, context?: string): string {
     return `My resume showcases my education, technical skills, and project experience. I have hands-on experience with: ${allSkills.slice(0, 6).join(', ')}, and more! Visit the Resume page to see all the details about my qualifications and achievements.`;
   }
   
-  // Learning/LMS questions
-  if (lowerMessage.includes('learn') || lowerMessage.includes('course') || lowerMessage.includes('lms') || lowerMessage.includes('teaching')) {
-    return `I'm passionate about continuous learning! I've built a Learning Management System as part of this portfolio. I believe in learning by doing and creating hands-on projects. Check out the LMS page to see the courses and learning materials I've developed!`;
+  // Learning questions
+  if (lowerMessage.includes('learn') || lowerMessage.includes('teaching')) {
+    return `I'm passionate about continuous learning! I believe in learning by doing and creating hands-on projects. I'm always exploring new technologies and building real-world applications to expand my skills!`;
   }
   
   // Contact questions
@@ -75,10 +75,6 @@ function generateContextualResponse(message: string, context?: string): string {
   
   if (context?.includes('project')) {
     return `This is one of my projects showcasing full-stack development skills. The project demonstrates proficiency in modern web technologies and clean code architecture. Would you like to know more about the technical implementation?`;
-  }
-  
-  if (context?.includes('lms') || context?.includes('course')) {
-    return `The Learning Management System demonstrates my ability to build complex educational platforms. It features course management, progress tracking, and interactive learning experiences. What aspect interests you most?`;
   }
   
   // Generic fallback

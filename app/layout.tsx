@@ -3,8 +3,8 @@ import '@/styles/globals.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Renante Marzan | Portfolio & LMS',
-  description: 'Professional portfolio, resume, and learning management system with AI-powered digital twin',
+  title: 'Renante Marzan | Portfolio & Resume',
+  description: 'Professional portfolio, resume, and projects showcase with AI-powered digital twin',
 };
 
 export default function RootLayout({
