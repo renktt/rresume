@@ -45,26 +45,26 @@
 
 @layer components {
   .btn-primary {
-    @apply px-6 py-3 bg-highlight text-white rounded-custom font-medium;
-    @apply hover:bg-opacity-90 transition-all duration-300;
+    @apply px-6 py-2.5 bg-highlight text-white rounded-custom font-medium;
+    @apply hover:bg-opacity-90 transition-all duration-200;
     @apply focus:outline-none focus:ring-2 focus:ring-highlight focus:ring-offset-2;
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-accent text-gray-800 rounded-custom font-medium;
-    @apply hover:bg-secondary transition-all duration-300;
+    @apply px-4 py-2 bg-accent text-gray-800 rounded-custom font-medium;
+    @apply hover:bg-secondary transition-all duration-200;
     @apply focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
   }
 
   .card {
-    @apply bg-white rounded-custom shadow-lg p-6;
-    @apply transition-all duration-300 hover:shadow-xl;
-    transform: translateZ(0);
-    backface-visibility: hidden;
+    @apply bg-white rounded-custom shadow-md p-6;
+    @apply transition-all duration-300 hover:shadow-lg;
+    border: 1px solid rgba(0, 0, 0, 0.05);
   }
   
   .card:hover {
-    transform: translateY(-2px) translateZ(0);
+    transform: translateY(-1px);
+    border-color: rgba(93, 134, 108, 0.2);
   }
 
   .dark .card {
@@ -82,7 +82,7 @@
   }
 
   .section-title {
-    @apply text-4xl md:text-5xl font-bold text-highlight mb-6;
+    @apply text-3xl md:text-4xl font-bold text-highlight;
   }
 
   .dark .section-title {

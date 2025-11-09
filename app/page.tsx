@@ -35,9 +35,9 @@ function Section({ children, id }: { children: React.ReactNode; id: string }) {
   return (
     <section
       id={id}
-      className="w-full flex items-center justify-center py-16"
+      className="w-full flex items-center justify-center py-20"
     >
-      <div className="w-full flex items-center justify-center px-4">
+      <div className="w-full flex items-center justify-center">
         {children}
       </div>
     </section>
@@ -169,32 +169,32 @@ export default function HomePage() {
   return (
     <div className="w-full">
       {/* HERO SECTION */}
-      <section id="hero" className="w-full flex items-center justify-center bg-gradient-to-br from-accent via-background to-secondary dark:from-dark-accent dark:via-dark-background dark:to-dark-secondary relative py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="group">
+      <section id="hero" className="w-full min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-accent via-background to-secondary dark:from-dark-accent dark:via-dark-background dark:to-dark-secondary relative py-24">
+        <div className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 text-center">
+          <div className="space-y-8">
             {/* Avatar */}
-            <div className="w-40 h-40 mx-auto mb-8 rounded-full bg-gradient-to-br from-highlight to-secondary dark:from-dark-highlight dark:to-secondary flex items-center justify-center text-white text-6xl font-bold shadow-xl">
+            <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-highlight to-secondary dark:from-dark-highlight dark:to-secondary flex items-center justify-center text-white text-5xl font-bold shadow-2xl">
               RM
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold text-highlight dark:text-dark-highlight mb-6">
-              Renante Misador Marzan
-            </h1>
+            <div className="space-y-4">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-highlight dark:text-dark-highlight tracking-tight">
+                Renante Misador Marzan
+              </h1>
 
-            <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-4 max-w-4xl mx-auto leading-relaxed">
-              Hi, I'm <strong>Renante Misador Marzan</strong> — a <strong>BSIT-4 student</strong> at{' '}
-              <strong>Saint Paul University Philippines</strong>, majoring in{' '}
-              <strong>Website Development</strong> and currently taking{' '}
-              <strong>Full Stack Development</strong>.
-            </p>
+              <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                <span className="font-semibold text-gray-800 dark:text-gray-200">BSIT-4 Student</span> at Saint Paul University Philippines<br />
+                Specializing in <span className="font-semibold text-highlight dark:text-dark-highlight">Website Development</span> & <span className="font-semibold text-highlight dark:text-dark-highlight">Full Stack Development</span>
+              </p>
+            </div>
 
-            <div className="mt-8">
+            <div className="pt-4">
               <a
                 href="#about"
-                className="btn-primary inline-flex items-center space-x-2 text-lg px-8 py-4"
+                className="btn-primary inline-flex items-center space-x-2 px-8 py-3.5 text-base font-medium shadow-lg hover:shadow-xl"
               >
                 <span>Meet My Digital Twin</span>
-                <ChevronDown size={24} />
+                <ChevronDown size={20} />
               </a>
             </div>
           </div>
@@ -203,21 +203,21 @@ export default function HomePage() {
 
       {/* ABOUT ME SECTION */}
       <Section id="about">
-        <div className="w-full bg-gradient-to-br from-background via-accent to-background dark:from-dark-background dark:via-dark-accent dark:to-dark-background">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="section-title text-center mb-8">About Me</h2>
+        <div className="w-full bg-gradient-to-br from-background via-accent to-background dark:from-dark-background dark:via-dark-accent dark:to-dark-background py-4">
+          <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+            <h2 className="section-title text-center mb-12">About Me</h2>
 
             {/* Bio Card */}
-            <div className="card max-w-4xl mx-auto mb-8">
-              <div className="flex items-start space-x-4">
-                <User className="text-highlight dark:text-dark-highlight flex-shrink-0" size={32} />
-                <div>
-                  <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+            <div className="card max-w-4xl mx-auto mb-10">
+              <div className="flex items-start space-x-5">
+                <User className="text-highlight dark:text-dark-highlight flex-shrink-0 mt-1" size={28} />
+                <div className="space-y-4">
+                  <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                     I am passionate about technology, web design, and AI innovation. My goal is to 
                     create innovative solutions that bridge the gap between cutting-edge technology 
                     and user-friendly experiences.
                   </p>
-                  <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                  <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                     With expertise in modern web technologies and a strong foundation in full-stack development,
                     I build responsive, scalable applications that solve real-world problems.
                   </p>
@@ -226,27 +226,27 @@ export default function HomePage() {
             </div>
 
             {/* Highlights Grid */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="card text-center hover:scale-105 transition-transform duration-300">
-                <GraduationCap className="text-highlight dark:text-dark-highlight mx-auto mb-4" size={48} />
-                <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200">Education</h3>
-                <p className="text-gray-600 dark:text-gray-400">
+            <div className="grid md:grid-cols-3 gap-6 mb-10">
+              <div className="card text-center">
+                <GraduationCap className="text-highlight dark:text-dark-highlight mx-auto mb-3" size={40} />
+                <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Education</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   BSIT-4 at Saint Paul University Philippines
                 </p>
               </div>
 
-              <div className="card text-center hover:scale-105 transition-transform duration-300">
-                <Code className="text-highlight dark:text-dark-highlight mx-auto mb-4" size={48} />
-                <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200">Specialization</h3>
-                <p className="text-gray-600 dark:text-gray-400">
+              <div className="card text-center">
+                <Code className="text-highlight dark:text-dark-highlight mx-auto mb-3" size={40} />
+                <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Specialization</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Website Development & Full Stack
                 </p>
               </div>
 
-              <div className="card text-center hover:scale-105 transition-transform duration-300">
-                <Heart className="text-highlight dark:text-dark-highlight mx-auto mb-4" size={48} />
-                <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200">Passion</h3>
-                <p className="text-gray-600 dark:text-gray-400">
+              <div className="card text-center">
+                <Heart className="text-highlight dark:text-dark-highlight mx-auto mb-3" size={40} />
+                <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Passion</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Technology, Web Design & AI Innovation
                 </p>
               </div>
@@ -254,10 +254,10 @@ export default function HomePage() {
 
             {/* Voice AI */}
             <div className="card max-w-2xl mx-auto">
-              <h3 className="text-2xl font-bold text-center text-highlight dark:text-dark-highlight mb-6">
+              <h3 className="text-xl font-semibold text-center text-highlight dark:text-dark-highlight mb-3">
                 Meet My Digital Twin
               </h3>
-              <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
                 Experience an AI-powered conversation with my digital twin!
               </p>
               <EnhancedVoiceAI
@@ -274,15 +274,15 @@ export default function HomePage() {
 
       {/* RESUME SECTION */}
       <Section id="resume">
-        <div className="w-full bg-gradient-to-br from-secondary via-background to-accent dark:from-dark-secondary dark:via-dark-background dark:to-dark-accent">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8">
-              <h2 className="section-title mb-4">Resume</h2>
+        <div className="w-full bg-gradient-to-br from-secondary via-background to-accent dark:from-dark-secondary dark:via-dark-background dark:to-dark-accent py-4">
+          <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+            <div className="text-center mb-10">
+              <h2 className="section-title mb-6">Resume</h2>
               <button
                 onClick={downloadResume}
-                className="btn-primary inline-flex items-center space-x-2"
+                className="btn-primary inline-flex items-center space-x-2 shadow-lg hover:shadow-xl"
               >
-                <Download size={20} />
+                <Download size={18} />
                 <span>Download PDF</span>
               </button>
             </div>
@@ -320,7 +320,7 @@ export default function HomePage() {
 
             {/* Voice AI */}
             <div className="card max-w-2xl mx-auto">
-              <h3 className="text-xl font-bold text-center text-highlight dark:text-dark-highlight mb-4">
+              <h3 className="text-xl font-semibold text-center text-highlight dark:text-dark-highlight mb-4">
                 Ask About My Qualifications
               </h3>
               <EnhancedVoiceAI
@@ -335,9 +335,9 @@ export default function HomePage() {
 
       {/* PROJECTS SECTION */}
       <Section id="projects">
-        <div className="w-full bg-gradient-to-br from-background via-accent to-background dark:from-dark-background dark:via-dark-accent dark:to-dark-background">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="section-title text-center mb-8">Projects</h2>
+        <div className="w-full bg-gradient-to-br from-background via-accent to-background dark:from-dark-background dark:via-dark-accent dark:to-dark-background py-4">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+            <h2 className="section-title text-center mb-12">Projects</h2>
 
             {selectedProject ? (
               <div className="card max-w-2xl mx-auto">
@@ -361,30 +361,30 @@ export default function HomePage() {
               </div>
             ) : (
               <>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                   {projects.map((project) => (
                     <div
                       key={project.id}
-                      className="card hover:scale-105 transition-transform duration-300"
+                      className="card"
                     >
-                      <div className="w-full h-32 bg-gradient-to-br from-highlight to-secondary rounded-lg mb-4 flex items-center justify-center text-white text-3xl font-bold">
+                      <div className="w-full h-28 bg-gradient-to-br from-highlight to-secondary rounded-lg mb-4 flex items-center justify-center text-white text-2xl font-bold shadow-sm">
                         {project.title.charAt(0)}
                       </div>
 
-                      <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+                      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
                         {project.title}
                       </h3>
                       
-                      <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-sm">
+                      <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-sm leading-relaxed">
                         {project.description}
                       </p>
 
                       <div className="mb-4">
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-1.5">
                           {project.techStack.split(',').slice(0, 3).map((tech, i) => (
                             <span
                               key={i}
-                              className="px-2 py-1 bg-accent dark:bg-dark-secondary text-xs rounded-full"
+                              className="px-2.5 py-0.5 bg-accent dark:bg-dark-secondary text-xs rounded-full font-medium text-gray-700 dark:text-gray-300"
                             >
                               {tech.trim()}
                             </span>
@@ -392,14 +392,15 @@ export default function HomePage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between pt-2">
                         <div className="flex space-x-2">
                           {project.githubLink && (
                             <a
                               href={project.githubLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2 bg-highlight text-white rounded-lg hover:bg-opacity-90"
+                              className="p-2 bg-highlight text-white rounded-lg hover:bg-opacity-90 transition-all"
+                              title="View on GitHub"
                             >
                               <Github size={16} />
                             </a>
@@ -409,7 +410,8 @@ export default function HomePage() {
                               href={project.demoLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2 bg-highlight text-white rounded-lg hover:bg-opacity-90"
+                              className="p-2 bg-highlight text-white rounded-lg hover:bg-opacity-90 transition-all"
+                              title="Live Demo"
                             >
                               <ExternalLink size={16} />
                             </a>
@@ -418,7 +420,7 @@ export default function HomePage() {
 
                         <button
                           onClick={() => setSelectedProject(project)}
-                          className="text-sm btn-secondary px-3 py-1"
+                          className="text-xs btn-secondary px-3 py-1.5"
                         >
                           Ask Twin
                         </button>
@@ -428,7 +430,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="card max-w-2xl mx-auto">
-                  <h3 className="text-xl font-bold text-center text-highlight dark:text-dark-highlight mb-4">
+                  <h3 className="text-xl font-semibold text-center text-highlight dark:text-dark-highlight mb-4">
                     Ask About My Projects
                   </h3>
                   <EnhancedVoiceAI
@@ -445,19 +447,19 @@ export default function HomePage() {
 
       {/* CONTACT SECTION */}
       <Section id="contact">
-        <div className="w-full bg-gradient-to-br from-accent via-background to-secondary dark:from-dark-accent dark:via-dark-background dark:to-dark-secondary">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="section-title text-center mb-8">Get In Touch</h2>
+        <div className="w-full bg-gradient-to-br from-accent via-background to-secondary dark:from-dark-accent dark:via-dark-background dark:to-dark-secondary py-4">
+          <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+            <h2 className="section-title text-center mb-12">Get In Touch</h2>
 
             <div className="grid lg:grid-cols-2 gap-8">
               {/* Contact Info */}
               <div>
                 <div className="card mb-6">
-                  <h3 className="text-xl font-bold text-highlight dark:text-dark-highlight mb-4">
+                  <h3 className="text-lg font-semibold text-highlight dark:text-dark-highlight mb-4">
                     Contact Information
                   </h3>
 
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div className="flex items-center space-x-3">
                       <Mail className="text-highlight dark:text-dark-highlight" size={20} />
                       <div>
@@ -485,7 +487,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="card">
-                  <h3 className="text-lg font-bold text-center text-highlight dark:text-dark-highlight mb-4">
+                  <h3 className="text-base font-semibold text-center text-highlight dark:text-dark-highlight mb-4">
                     Talk to My Digital Twin
                   </h3>
                   <EnhancedVoiceAI
@@ -498,13 +500,13 @@ export default function HomePage() {
 
               {/* Contact Form */}
               <div className="card">
-                <h3 className="text-xl font-bold text-highlight dark:text-dark-highlight mb-6">
+                <h3 className="text-lg font-semibold text-highlight dark:text-dark-highlight mb-6">
                   Send a Message
                 </h3>
 
-                <form onSubmit={handleContactSubmit} className="space-y-4">
+                <form onSubmit={handleContactSubmit} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Full Name *</label>
+                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Full Name *</label>
                     <input
                       type="text"
                       name="name"
