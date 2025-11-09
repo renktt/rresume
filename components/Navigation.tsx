@@ -25,12 +25,12 @@ export default function Navigation() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
             setActiveSection(entry.target.id);
           }
         });
       },
-      { threshold: 0.5 }
+      { threshold: [0.5, 0.75, 1.0], rootMargin: '-80px 0px -20% 0px' }
     );
 
     // Observe all sections
@@ -44,7 +44,11 @@ export default function Navigation() {
     const id = href.replace('#', '');
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+      });
     }
     setIsOpen(false);
   };

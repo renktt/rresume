@@ -30,21 +30,53 @@ interface Project {
   featured: boolean;
 }
 
+// Animation variants for staggered content
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      delayChildren: 0.2,
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut'
+    }
+  }
+};
+
 // Animation wrapper component
 function Section({ children, id }: { children: React.ReactNode; id: string }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.2 });
+  const isInView = useInView(ref, { once: false, amount: 0.3 });
 
   return (
     <motion.section
       ref={ref}
       id={id}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="min-h-screen flex items-center justify-center px-4"
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{ duration: 0.7, ease: 'easeInOut' }}
+      className="h-screen w-full flex items-center justify-center overflow-y-auto"
+      style={{ scrollSnapAlign: 'start' }}
     >
-      {children}
+      <motion.div 
+        className="w-full h-full flex items-center justify-center py-8 px-4"
+        variants={containerVariants}
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
+      >
+        {children}
+      </motion.div>
     </motion.section>
   );
 }
@@ -55,10 +87,17 @@ export default function HomePage() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isProjectsLoaded, setIsProjectsLoaded] = useState(false);
 
   useEffect(() => {
     fetchResumeData();
-    fetchProjects();
+    
+    // Lazy load projects when user approaches that section
+    const timer = setTimeout(() => {
+      fetchProjects();
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const fetchResumeData = async () => {
@@ -75,7 +114,10 @@ export default function HomePage() {
     try {
       const res = await fetch('/api/projects');
       const data = await res.json();
-      if (Array.isArray(data)) setProjects(data);
+      if (Array.isArray(data)) {
+        setProjects(data);
+        setIsProjectsLoaded(true);
+      }
     } catch (error) {
       console.error('Error fetching projects:', error);
     }
@@ -162,9 +204,9 @@ export default function HomePage() {
   };
 
   return (
-    <div>
+    <div className="w-full">
       {/* HERO SECTION */}
-      <section id="hero" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent via-background to-secondary dark:from-dark-accent dark:via-dark-background dark:to-dark-secondary relative">
+      <section id="hero" className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-accent via-background to-secondary dark:from-dark-accent dark:via-dark-background dark:to-dark-secondary relative" style={{ scrollSnapAlign: 'start' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
