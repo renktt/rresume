@@ -1,0 +1,126 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Resume {
+  id          Int      @id @default(autoincrement())
+  section     String   @db.VarChar(100)
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  dateRange   String   @db.VarChar(100) @map("date_range")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("resume")
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  techStack   String   @db.VarChar(255) @map("tech_stack")
+  githubLink  String?  @db.VarChar(255) @map("github_link")
+  demoLink    String?  @db.VarChar(255) @map("demo_link")
+  imageUrl    String?  @db.VarChar(255) @map("image_url")
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("projects")
+}
+
+model Course {
+  id          Int            @id @default(autoincrement())
+  title       String         @db.VarChar(255)
+  description String         @db.Text
+  progress    Int            @default(0)
+  completed   Boolean        @default(false)
+  duration    String?        @db.VarChar(100)
+  level       String?        @db.VarChar(50)
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+  userProgress UserProgress[]
+
+  @@map("courses")
+}
+
+model UserProgress {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  courseId  Int      @map("course_id")
+  progress  Int      @default(0)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@map("user_progress")
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  email     String   @db.VarChar(255)
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("contact_messages")
+}
+
+model Quiz {
+  id          Int           @id @default(autoincrement())
+  courseId    Int           @map("course_id")
+  title       String        @db.VarChar(255)
+  description String?       @db.Text
+  createdAt   DateTime      @default(now()) @map("created_at")
+  questions   QuizQuestion[]
+
+  @@map("quizzes")
+}
+
+model QuizQuestion {
+  id            Int      @id @default(autoincrement())
+  quizId        Int      @map("quiz_id")
+  question      String   @db.Text
+  options       String   @db.Text // JSON array of options
+  correctAnswer String   @db.VarChar(255) @map("correct_answer")
+  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@index([quizId])
+  @@map("quiz_questions")
+}
+
+model AiMemory {
+  id               Int      @id @default(autoincrement())
+  userId           String   @db.VarChar(100) @map("user_id")
+  sessionId        String   @db.VarChar(100) @map("session_id")
+  conversationType String   @db.VarChar(20) @map("conversation_type") // 'voice' or 'chat'
+  message          String   @db.Text
+  response         String   @db.Text
+  context          String?  @db.Text // JSON context data
+  lastInteraction  DateTime @default(now()) @map("last_interaction")
+  
+  @@index([userId])
+  @@index([sessionId])
+  @@map("ai_memory")
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  sessionId String   @db.VarChar(100) @map("session_id")
+  role      String   @db.VarChar(20) // 'user' or 'assistant'
+  content   String   @db.Text
+  timestamp DateTime @default(now())
+  
+  @@index([sessionId])
+  @@map("chat_messages")
+}
