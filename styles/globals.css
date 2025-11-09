@@ -7,9 +7,10 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-snap-type: y mandatory;
+    scroll-snap-type: y proximity;
     overflow-y: scroll;
     overflow-x: hidden;
+    scroll-padding-top: 0;
   }
 
   body {
@@ -26,31 +27,37 @@
 
   /* Full-screen sections with snap behavior */
   section {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
+    scroll-snap-align: center;
     min-height: 100vh;
     margin: 0 !important;
     padding: 0 !important;
     position: relative;
+    scroll-padding-top: 0;
+    transition: opacity 0.4s cubic-bezier(0.43, 0.13, 0.23, 0.96);
   }
 
   /* Responsive adjustments for mobile */
   @media (max-width: 768px) {
     html {
-      scroll-snap-type: y proximity;
+      scroll-snap-type: none;
     }
     
     section {
-      scroll-snap-align: start;
+      scroll-snap-align: none;
       min-height: 100vh;
       height: auto;
     }
   }
 
-  /* Desktop: strict snap */
+  /* Desktop: smooth snap */
   @media (min-width: 769px) {
+    html {
+      scroll-snap-type: y proximity;
+    }
+    
     section {
       height: 100vh;
+      scroll-snap-align: center;
     }
   }
 
@@ -75,9 +82,13 @@
 
   .card {
     @apply bg-white rounded-custom shadow-lg p-6;
-    @apply transition-all duration-300 hover:shadow-xl hover:scale-[1.02];
-    will-change: transform;
+    @apply transition-all duration-300 hover:shadow-xl;
+    transform: translateZ(0);
     backface-visibility: hidden;
+  }
+  
+  .card:hover {
+    transform: translateY(-2px) translateZ(0);
   }
 
   .dark .card {
@@ -190,9 +201,13 @@
 }
 
 /* GPU acceleration for smooth animations */
-section, .card, button {
+section {
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+}
+
+.card, button {
   transform: translateZ(0);
-  will-change: transform, opacity;
 }
 
 /* Scrollbar styling */

@@ -36,20 +36,21 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      delayChildren: 0.2,
-      staggerChildren: 0.1
+      delayChildren: 0.15,
+      staggerChildren: 0.08,
+      ease: [0.43, 0.13, 0.23, 0.96]
     }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 15 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.5,
-      ease: 'easeOut'
+      duration: 0.4,
+      ease: [0.43, 0.13, 0.23, 0.96]
     }
   }
 };
@@ -57,17 +58,17 @@ const itemVariants = {
 // Animation wrapper component
 function Section({ children, id }: { children: React.ReactNode; id: string }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.3 });
+  const isInView = useInView(ref, { once: false, amount: 0.25, margin: '0px 0px -100px 0px' });
 
   return (
     <motion.section
       ref={ref}
       id={id}
-      initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-      transition={{ duration: 0.7, ease: 'easeInOut' }}
+      initial={{ opacity: 0 }}
+      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+      transition={{ duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
       className="h-screen w-full flex items-center justify-center overflow-y-auto"
-      style={{ scrollSnapAlign: 'start' }}
+      style={{ scrollSnapAlign: 'center' }}
     >
       <motion.div 
         className="w-full h-full flex items-center justify-center py-8 px-4"
@@ -206,38 +207,39 @@ export default function HomePage() {
   return (
     <div className="w-full">
       {/* HERO SECTION */}
-      <section id="hero" className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-accent via-background to-secondary dark:from-dark-accent dark:via-dark-background dark:to-dark-secondary relative" style={{ scrollSnapAlign: 'start' }}>
+      <section id="hero" className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-accent via-background to-secondary dark:from-dark-accent dark:via-dark-background dark:to-dark-secondary relative" style={{ scrollSnapAlign: 'center' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-            whileHover={{ scale: 1.03 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
             className="group cursor-pointer"
           >
             {/* Avatar with hover effects */}
             <motion.div 
-              className="w-40 h-40 mx-auto mb-8 rounded-full bg-gradient-to-br from-highlight to-secondary dark:from-dark-highlight dark:to-secondary flex items-center justify-center text-white text-6xl font-bold shadow-xl transition-all duration-300 group-hover:shadow-[0_20px_50px_rgba(93,134,108,0.4)]"
-              whileHover={{ y: -8, scale: 1.05 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+              className="w-40 h-40 mx-auto mb-8 rounded-full bg-gradient-to-br from-highlight to-secondary dark:from-dark-highlight dark:to-secondary flex items-center justify-center text-white text-6xl font-bold shadow-xl transition-all duration-400"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.05, duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
+              whileHover={{ y: -6, scale: 1.04, boxShadow: "0 20px 50px rgba(93,134,108,0.4)" }}
             >
               RM
             </motion.div>
 
             <motion.h1 
               className="text-5xl md:text-7xl font-bold text-highlight dark:text-dark-highlight mb-6 transition-all duration-300 group-hover:text-opacity-90"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.15, duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               Renante Misador Marzan
             </motion.h1>
 
             <motion.p 
               className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-4 max-w-4xl mx-auto leading-relaxed"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.3, duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
             >
               Hi, I'm <strong>Renante Misador Marzan</strong> — a <strong>BSIT-4 student</strong> at{' '}
               <strong>Saint Paul University Philippines</strong>, majoring in{' '}
@@ -246,9 +248,9 @@ export default function HomePage() {
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.45, duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
               className="mt-8"
             >
               <a
@@ -264,15 +266,15 @@ export default function HomePage() {
           {/* Scroll Indicator */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 1 }}
+            animate={{ opacity: 0.7 }}
+            transition={{ delay: 0.8, duration: 0.8, ease: 'easeOut' }}
             className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
           >
             <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
+              animate={{ y: [0, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
             >
-              <ChevronDown size={32} className="text-highlight dark:text-dark-highlight" />
+              <ChevronDown size={32} className="text-highlight dark:text-dark-highlight opacity-70" />
             </motion.div>
           </motion.div>
         </div>
