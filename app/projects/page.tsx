@@ -135,12 +135,12 @@ export default function ProjectsPage() {
           </div>
         )}
 
-        {/* Voice AI Section */}
+        {/* Project Detail Modal */}
         {selectedProject && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="card max-w-2xl mx-auto"
+            className="card max-w-2xl mx-auto mb-12"
           >
             <button
               onClick={() => setSelectedProject(null)}
@@ -149,39 +149,70 @@ export default function ProjectsPage() {
               ← Back to projects
             </button>
             <h3 className="text-2xl font-bold text-center text-highlight dark:text-dark-highlight mb-4">
-              About: {selectedProject.title}
+              {selectedProject.title}
             </h3>
             <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
-              Ask my digital twin to explain this project in detail!
+              {selectedProject.description}
             </p>
-            <EnhancedVoiceAI
-              buttonText="Explain This Project"
-              context={`Project: ${selectedProject.title}. Description: ${selectedProject.description}. Tech Stack: ${selectedProject.techStack}. Provide detailed information about this project.`}
-              sessionId={`project_${selectedProject.id}_voice`}
-            />
+            <div className="mb-6">
+              <div className="flex flex-wrap gap-2 justify-center">
+                {selectedProject.techStack.split(',').map((tech, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1 bg-accent dark:bg-dark-secondary text-sm rounded-full text-gray-700 dark:text-gray-200"
+                  >
+                    {tech.trim()}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-center space-x-4">
+              {selectedProject.githubLink && (
+                <a
+                  href={selectedProject.githubLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary inline-flex items-center space-x-2"
+                >
+                  <Github size={18} />
+                  <span>GitHub</span>
+                </a>
+              )}
+              {selectedProject.demoLink && (
+                <a
+                  href={selectedProject.demoLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary inline-flex items-center space-x-2"
+                >
+                  <ExternalLink size={18} />
+                  <span>Live Demo</span>
+                </a>
+              )}
+            </div>
           </motion.div>
         )}
 
-        {!selectedProject && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="card max-w-2xl mx-auto"
-          >
-            <h3 className="text-2xl font-bold text-center text-highlight dark:text-dark-highlight mb-6">
-              Ask About My Projects
-            </h3>
-            <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
-              Want to know more about my development work? Talk to my digital twin!
-            </p>
-            <EnhancedVoiceAI
-              buttonText="Discuss Projects"
-              context="Projects page. Discuss Renante's various web development and full-stack projects, including technologies used and problem-solving approaches."
-              sessionId="projects_page_voice"
-            />
-          </motion.div>
-        )}
+        {/* Digital Twin Section - Always visible at the end */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="card max-w-2xl mx-auto"
+        >
+          <h3 className="text-2xl font-bold text-center text-highlight dark:text-dark-highlight mb-4">
+            Meet My Digital Twin
+          </h3>
+          <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
+            Experience an AI-powered conversation with my digital twin! Ask about my projects, skills, and experience.
+          </p>
+          <EnhancedVoiceAI
+            greeting="Hello! I'm Renante's digital twin. I can tell you about my web development projects, technical skills, and experience. How can I help you?"
+            buttonText="Talk to My Twin"
+            context="Projects page. Discuss Renante's various web development and full-stack projects, including technologies used, problem-solving approaches, and technical expertise."
+            sessionId="projects_page_voice"
+          />
+        </motion.div>
       </div>
     </div>
   );

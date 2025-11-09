@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import EnhancedVoiceAI from '@/components/EnhancedVoiceAI';
 import { 
   User, GraduationCap, Code, Heart, Download, 
   Briefcase, Award, ExternalLink, Github,
@@ -251,23 +250,6 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-
-            {/* Voice AI */}
-            <div className="card max-w-2xl mx-auto">
-              <h3 className="text-xl font-semibold text-center text-highlight dark:text-dark-highlight mb-3">
-                Meet My Digital Twin
-              </h3>
-              <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
-                Experience an AI-powered conversation with my digital twin!
-              </p>
-              <EnhancedVoiceAI
-                greeting="Hello! I'm Renante's digital twin. I'm here to tell you about Renante Misador Marzan, a passionate BSIT student from Saint Paul University Philippines."
-                autoGreet={true}
-                buttonText="Talk to My Twin"
-                context="About Me section. Provide information about Renante's background, education, and interests."
-                sessionId="about_section"
-              />
-            </div>
           </div>
         </div>
       </Section>
@@ -317,18 +299,6 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-
-            {/* Voice AI */}
-            <div className="card max-w-2xl mx-auto">
-              <h3 className="text-xl font-semibold text-center text-highlight dark:text-dark-highlight mb-4">
-                Ask About My Qualifications
-              </h3>
-              <EnhancedVoiceAI
-                buttonText="Explain My Resume"
-                context="Resume section. Provide detailed information about Renante's qualifications."
-                sessionId="resume_section"
-              />
-            </div>
           </div>
         </div>
       </Section>
@@ -353,11 +323,42 @@ export default function HomePage() {
                 <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
                   {selectedProject.description}
                 </p>
-                <EnhancedVoiceAI
-                  buttonText="Explain This Project"
-                  context={`Project: ${selectedProject.title}. ${selectedProject.description}`}
-                  sessionId={`project_${selectedProject.id}`}
-                />
+                <div className="mb-4">
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {selectedProject.techStack.split(',').map((tech, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 bg-accent dark:bg-dark-secondary text-sm rounded-full text-gray-700 dark:text-gray-200"
+                      >
+                        {tech.trim()}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex justify-center space-x-4">
+                  {selectedProject.githubLink && (
+                    <a
+                      href={selectedProject.githubLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary inline-flex items-center space-x-2"
+                    >
+                      <Github size={18} />
+                      <span>GitHub</span>
+                    </a>
+                  )}
+                  {selectedProject.demoLink && (
+                    <a
+                      href={selectedProject.demoLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary inline-flex items-center space-x-2"
+                    >
+                      <ExternalLink size={18} />
+                      <span>Live Demo</span>
+                    </a>
+                  )}
+                </div>
               </div>
             ) : (
               <>
@@ -416,28 +417,17 @@ export default function HomePage() {
                               <ExternalLink size={16} />
                             </a>
                           )}
+                          <button
+                            onClick={() => setSelectedProject(project)}
+                            className="p-2 bg-secondary text-gray-800 rounded-lg hover:bg-opacity-90 transition-all"
+                            title="View Details"
+                          >
+                            <ExternalLink size={16} />
+                          </button>
                         </div>
-
-                        <button
-                          onClick={() => setSelectedProject(project)}
-                          className="text-xs btn-secondary px-3 py-1.5"
-                        >
-                          Ask Twin
-                        </button>
                       </div>
                     </div>
                   ))}
-                </div>
-
-                <div className="card max-w-2xl mx-auto">
-                  <h3 className="text-xl font-semibold text-center text-highlight dark:text-dark-highlight mb-4">
-                    Ask About My Projects
-                  </h3>
-                  <EnhancedVoiceAI
-                    buttonText="Discuss Projects"
-                    context="Projects section. Discuss web development projects."
-                    sessionId="projects_section"
-                  />
                 </div>
               </>
             )}
@@ -484,17 +474,6 @@ export default function HomePage() {
                       </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="card">
-                  <h3 className="text-base font-semibold text-center text-highlight dark:text-dark-highlight mb-4">
-                    Talk to My Digital Twin
-                  </h3>
-                  <EnhancedVoiceAI
-                    buttonText="Start Conversation"
-                    context="Contact section."
-                    sessionId="contact_section"
-                  />
                 </div>
               </div>
 
