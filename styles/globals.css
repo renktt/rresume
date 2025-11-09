@@ -21,7 +21,7 @@
 
   /* Smooth scrolling for sections */
   section {
-    scroll-margin-top: 4rem;
+    scroll-margin-top: 2rem;
   }
 
   /* Optimize scroll behavior */
@@ -63,7 +63,7 @@
   }
 
   .section-title {
-    @apply text-4xl md:text-5xl font-bold text-highlight mb-8;
+    @apply text-4xl md:text-5xl font-bold text-highlight mb-6;
   }
 
   .dark .section-title {

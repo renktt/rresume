@@ -42,7 +42,7 @@ function Section({ children, id }: { children: React.ReactNode; id: string }) {
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="min-h-screen flex items-center justify-center py-16 px-4"
+      className="min-h-screen flex items-center justify-center px-4"
     >
       {children}
     </motion.section>
@@ -240,10 +240,10 @@ export default function HomePage() {
       <Section id="about">
         <div className="w-full bg-gradient-to-br from-background via-accent to-background dark:from-dark-background dark:via-dark-accent dark:to-dark-background">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="section-title text-center mb-10">About Me</h2>
+            <h2 className="section-title text-center mb-8">About Me</h2>
 
             {/* Bio Card */}
-            <div className="card max-w-4xl mx-auto mb-10">
+            <div className="card max-w-4xl mx-auto mb-8">
               <div className="flex items-start space-x-4">
                 <User className="text-highlight dark:text-dark-highlight flex-shrink-0" size={32} />
                 <div>
@@ -261,7 +261,7 @@ export default function HomePage() {
             </div>
 
             {/* Highlights Grid */}
-            <div className="grid md:grid-cols-3 gap-6 mb-10">
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="card text-center hover:scale-105 transition-transform duration-300">
                 <GraduationCap className="text-highlight dark:text-dark-highlight mx-auto mb-4" size={48} />
                 <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200">Education</h3>
@@ -311,7 +311,7 @@ export default function HomePage() {
       <Section id="resume">
         <div className="w-full bg-gradient-to-br from-secondary via-background to-accent dark:from-dark-secondary dark:via-dark-background dark:to-dark-accent">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10">
+            <div className="text-center mb-8">
               <h2 className="section-title mb-4">Resume</h2>
               <button
                 onClick={downloadResume}
@@ -322,7 +322,7 @@ export default function HomePage() {
               </button>
             </div>
 
-            <div className="space-y-6 mb-10">
+            <div className="space-y-5 mb-8">
               {Object.keys(groupedData).map((section) => (
                 <div key={section}>
                   <div className="flex items-center space-x-3 mb-4">
@@ -372,7 +372,7 @@ export default function HomePage() {
       <Section id="projects">
         <div className="w-full bg-gradient-to-br from-background via-accent to-background dark:from-dark-background dark:via-dark-accent dark:to-dark-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="section-title text-center mb-10">Projects</h2>
+            <h2 className="section-title text-center mb-8">Projects</h2>
 
             {selectedProject ? (
               <div className="card max-w-2xl mx-auto">
@@ -396,7 +396,7 @@ export default function HomePage() {
               </div>
             ) : (
               <>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                   {projects.map((project) => (
                     <div
                       key={project.id}
@@ -482,7 +482,7 @@ export default function HomePage() {
       <Section id="contact">
         <div className="w-full bg-gradient-to-br from-accent via-background to-secondary dark:from-dark-accent dark:via-dark-background dark:to-dark-secondary">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="section-title text-center mb-10">Get In Touch</h2>
+            <h2 className="section-title text-center mb-8">Get In Touch</h2>
 
             <div className="grid lg:grid-cols-2 gap-8">
               {/* Contact Info */}
