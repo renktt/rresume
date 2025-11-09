@@ -169,7 +169,7 @@ export default function HomePage() {
   return (
     <div className="w-full">
       {/* HERO SECTION */}
-      <section id="hero" className="w-full min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-accent via-background to-secondary dark:from-dark-accent dark:via-dark-background dark:to-dark-secondary relative py-24">
+      <section id="hero" className="w-full min-h-[85vh] flex items-center justify-center bg-background dark:bg-dark-background relative py-24">
         <div className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 text-center">
           <div className="space-y-8">
             {/* Avatar */}
@@ -203,7 +203,7 @@ export default function HomePage() {
 
       {/* ABOUT ME SECTION */}
       <Section id="about">
-        <div className="w-full bg-gradient-to-br from-background via-accent to-background dark:from-dark-background dark:via-dark-accent dark:to-dark-background py-4">
+        <div className="w-full bg-background dark:bg-dark-background py-4">
           <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
             <h2 className="section-title text-center mb-12">About Me</h2>
 
@@ -274,7 +274,7 @@ export default function HomePage() {
 
       {/* RESUME SECTION */}
       <Section id="resume">
-        <div className="w-full bg-gradient-to-br from-secondary via-background to-accent dark:from-dark-secondary dark:via-dark-background dark:to-dark-accent py-4">
+        <div className="w-full bg-background dark:bg-dark-background py-4">
           <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
             <div className="text-center mb-10">
               <h2 className="section-title mb-6">Resume</h2>
@@ -335,7 +335,7 @@ export default function HomePage() {
 
       {/* PROJECTS SECTION */}
       <Section id="projects">
-        <div className="w-full bg-gradient-to-br from-background via-accent to-background dark:from-dark-background dark:via-dark-accent dark:to-dark-background py-4">
+        <div className="w-full bg-background dark:bg-dark-background py-4">
           <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
             <h2 className="section-title text-center mb-12">Projects</h2>
 
@@ -447,7 +447,7 @@ export default function HomePage() {
 
       {/* CONTACT SECTION */}
       <Section id="contact">
-        <div className="w-full bg-gradient-to-br from-accent via-background to-secondary dark:from-dark-accent dark:via-dark-background dark:to-dark-secondary py-4">
+        <div className="w-full bg-background dark:bg-dark-background py-4">
           <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
             <h2 className="section-title text-center mb-12">Get In Touch</h2>
 
