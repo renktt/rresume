@@ -85,10 +85,7 @@ export const vectorHelpers = {
       // Use range to scan all vectors and filter for resume entries
       const allData = await vectorIndex.range({ cursor: '0', limit: 1000, includeMetadata: true });
       
-      console.log('getResume - Total vectors:', allData?.vectors?.length || 0);
-      
       if (!allData || !allData.vectors || allData.vectors.length === 0) {
-        console.log('getResume - No vectors found');
         return [];
       }
       
@@ -96,8 +93,6 @@ export const vectorHelpers = {
         .filter(v => v && v.metadata && (v.metadata as any).section)
         .map(v => v!.metadata as ResumeItem)
         .sort((a, b) => a.order - b.order);
-      
-      console.log('getResume - Found resume items:', resumeItems.length);
       
       return resumeItems;
     } catch (error) {
@@ -160,10 +155,7 @@ export const vectorHelpers = {
       // Use range to scan all vectors and filter for project entries
       const allData = await vectorIndex.range({ cursor: '0', limit: 1000, includeMetadata: true });
       
-      console.log('getProjects - Total vectors:', allData?.vectors?.length || 0);
-      
       if (!allData || !allData.vectors || allData.vectors.length === 0) {
-        console.log('getProjects - No vectors found');
         return [];
       }
       
@@ -171,8 +163,6 @@ export const vectorHelpers = {
         .filter(v => v && v.metadata && (v.metadata as any).title && (v.metadata as any).techStack)
         .map(v => v!.metadata as Project)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      
-      console.log('getProjects - Found projects:', projects.length);
       
       return projects;
     } catch (error) {
