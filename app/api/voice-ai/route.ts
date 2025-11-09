@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { RENANTE_PROFILE } from '@/lib/digital-twin-personality';
-import { redisHelpers } from '@/lib/redis';
+import { vectorHelpers } from '@/lib/vector';
 import { generateDigitalTwinResponse, GROQ_MODELS, generateGroqResponse } from '@/lib/groq';
 
 interface ChatMessage {
@@ -16,8 +16,8 @@ async function generateVoiceResponse(message: string, context?: string): Promise
   
   try {
     const [resume, projects] = await Promise.all([
-      redisHelpers.getResume(),
-      redisHelpers.getProjects()
+      vectorHelpers.getResume(),
+      vectorHelpers.getProjects()
     ]);
     
     resumeData = Array.isArray(resume) ? resume : [];

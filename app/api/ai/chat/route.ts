@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { RENANTE_PROFILE } from '@/lib/digital-twin-personality';
-import { redisHelpers } from '@/lib/redis';
+import { vectorHelpers } from '@/lib/vector';
 import { generateDigitalTwinResponse } from '@/lib/groq';
 
 interface ChatMessage {
@@ -16,8 +16,8 @@ async function generateContextualResponse(message: string, context?: string, con
   
   try {
     const [resume, projects] = await Promise.all([
-      redisHelpers.getResume(),
-      redisHelpers.getProjects()
+      vectorHelpers.getResume(),
+      vectorHelpers.getProjects()
     ]);
     
     resumeData = Array.isArray(resume) ? resume : [];
@@ -75,32 +75,26 @@ export async function POST(req: Request) {
     // Generate AI-powered response with conversation history
     const response = await generateContextualResponse(message, context, conversationHistory);
 
-    // Store in Redis memory
+    // Store in Vector memory
     try {
       const currentSessionId = sessionId || 'default';
       
       // Store user message
-      await redisHelpers.addChatMessage(currentSessionId, {
-        sessionId: currentSessionId,
+      await vectorHelpers.addChatMessage(currentSessionId, {
         role: 'user',
         content: message,
       });
 
       // Store assistant response
-      await redisHelpers.addChatMessage(currentSessionId, {
-        sessionId: currentSessionId,
+      await vectorHelpers.addChatMessage(currentSessionId, {
         role: 'assistant',
         content: response,
       });
 
       // Store in AI memory for context
-      await redisHelpers.addAiMemory(currentSessionId, {
-        userId: 'anonymous',
-        sessionId: currentSessionId,
-        conversationType: 'chat',
-        message,
-        response,
-        context: context ? JSON.stringify(context) : null,
+      await vectorHelpers.addAiMemory(currentSessionId, {
+        topic: 'chat',
+        content: `User: ${message}\nAssistant: ${response}`,
       });
     } catch (memoryError) {
       console.log('Memory storage error:', memoryError);

@@ -1,12 +1,12 @@
-import { redisHelpers } from '@/lib/redis';
+import { vectorHelpers } from '@/lib/vector';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const resumeData: any = await redisHelpers.getResume();
+    const resumeData = await vectorHelpers.getResume();
     
     // Sort by section and order
-    const sorted = resumeData.sort((a: any, b: any) => {
+    const sorted = resumeData.sort((a, b) => {
       if (a.section === b.section) {
         return (a.order || 0) - (b.order || 0);
       }
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { section, title, description, dateRange, order } = body;
 
-    const resumeItem = await redisHelpers.addResumeItem({
+    const resumeItem = await vectorHelpers.addResumeItem({
       section,
       title,
       description,

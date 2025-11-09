@@ -1,4 +1,4 @@
-import { redisHelpers } from '@/lib/redis';
+import { vectorHelpers } from '@/lib/vector';
 import { NextResponse } from 'next/server';
 
 // GET - Retrieve conversation history for a session
@@ -16,16 +16,16 @@ export async function GET(req: Request) {
     }
 
     // Get recent chat messages
-    const allMessages: any = await redisHelpers.getChatMessages(sessionId);
+    const allMessages = await vectorHelpers.getChatMessages(sessionId);
     const messages = allMessages
-      .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, limit)
       .reverse(); // Oldest first for display
 
     // Get AI memory context
-    const allMemory: any = await redisHelpers.getAiMemory(sessionId);
+    const allMemory = await vectorHelpers.getAiMemory(sessionId);
     const memory = allMemory
-      .sort((a: any, b: any) => new Date(b.lastInteraction).getTime() - new Date(a.lastInteraction).getTime())
+      .sort((a, b) => new Date(b.lastInteraction).getTime() - new Date(a.lastInteraction).getTime())
       .slice(0, 5);
 
     return NextResponse.json({
@@ -58,20 +58,15 @@ export async function POST(req: Request) {
 
     // Store in AI memory for context tracking
     if (message && response) {
-      await redisHelpers.addAiMemory(sessionId, {
-        userId: userId || 'anonymous',
-        sessionId,
-        conversationType,
-        message,
-        response,
-        context: context ? JSON.stringify(context) : null,
+      await vectorHelpers.addAiMemory(sessionId, {
+        topic: conversationType || 'general',
+        content: `User: ${message}\nAssistant: ${response}${context ? '\nContext: ' + JSON.stringify(context) : ''}`,
       });
     }
 
     // Store in chat messages for conversation history
     if (role && content) {
-      await redisHelpers.addChatMessage(sessionId, {
-        sessionId,
+      await vectorHelpers.addChatMessage(sessionId, {
         role,
         content,
       });
@@ -100,7 +95,7 @@ export async function DELETE(req: Request) {
       );
     }
 
-    await redisHelpers.clearChatMessages(sessionId);
+    await vectorHelpers.clearChatMessages(sessionId);
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -1,16 +1,12 @@
-import { redisHelpers } from '@/lib/redis';
+import { vectorHelpers } from '@/lib/vector';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const projects: any = await redisHelpers.getProjects();
+    const projects = await vectorHelpers.getProjects();
     
-    // Sort by createdAt descending
-    const sorted = projects.sort((a: any, b: any) => {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
-
-    return NextResponse.json(sorted);
+    // Already sorted by createdAt descending in the helper
+    return NextResponse.json(projects);
   } catch (error) {
     console.error('Error fetching projects:', error);
     return NextResponse.json(
@@ -25,7 +21,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { title, description, techStack, githubLink, demoLink, imageUrl, featured } = body;
 
-    const project = await redisHelpers.addProject({
+    const project = await vectorHelpers.addProject({
       title,
       description,
       techStack,

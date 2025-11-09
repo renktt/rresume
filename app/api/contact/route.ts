@@ -1,4 +1,4 @@
-import { redisHelpers } from '@/lib/redis';
+import { vectorHelpers } from '@/lib/vector';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const contactMessage = await redisHelpers.addContactMessage({
+    const contactMessage = await vectorHelpers.addContactMessage({
       name,
       email,
       message,
@@ -31,14 +31,10 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const messages: any = await redisHelpers.getContactMessages();
+    const messages = await vectorHelpers.getContactMessages();
     
-    // Sort by createdAt descending
-    const sorted = messages.sort((a: any, b: any) => {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
-
-    return NextResponse.json(sorted);
+    // Already sorted by createdAt descending in the helper
+    return NextResponse.json(messages);
   } catch (error) {
     console.error('Error fetching contact messages:', error);
     return NextResponse.json(
