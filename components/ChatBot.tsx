@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Trash2, Loader2 } from 'lucide-react';
+import { MessageCircle, X, Send, Trash2, Loader2, Mic, MicOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface Message {
@@ -22,8 +22,15 @@ export default function ChatBot({ context }: ChatBotProps) {
   const [isTyping, setIsTyping] = useState(false);
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
   
+  // Voice AI states
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isVoiceSupported, setIsVoiceSupported] = useState(true);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
+  const synthRef = useRef<SpeechSynthesis | null>(null);
 
   // Auto-scroll to bottom
   const scrollToBottom = () => {
@@ -33,6 +40,56 @@ export default function ChatBot({ context }: ChatBotProps) {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+
+  // Initialize speech recognition and synthesis
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      
+      if (!SpeechRecognition) {
+        setIsVoiceSupported(false);
+        return;
+      }
+
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onresult = (event: any) => {
+        const current = event.resultIndex;
+        const transcript = event.results[current][0].transcript;
+        setInputMessage(transcript);
+
+        if (event.results[current].isFinal) {
+          setIsListening(false);
+        }
+      };
+
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          toast.error('Microphone access denied');
+        }
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+
+      synthRef.current = window.speechSynthesis;
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      if (synthRef.current) {
+        synthRef.current.cancel();
+      }
+    };
+  }, []);
 
   // Focus input when chat opens
   useEffect(() => {
@@ -111,6 +168,11 @@ export default function ChatBot({ context }: ChatBotProps) {
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+      
+      // Speak the response if voice is enabled
+      if (synthRef.current && isVoiceSupported) {
+        speakResponse(data.response);
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       toast.error('Failed to send message. Please try again.');
@@ -123,6 +185,61 @@ export default function ChatBot({ context }: ChatBotProps) {
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsTyping(false);
+    }
+  };
+
+  const toggleVoiceInput = () => {
+    if (!isVoiceSupported) {
+      toast.error('Voice recognition is not supported in your browser');
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      try {
+        setInputMessage('');
+        recognitionRef.current?.start();
+        setIsListening(true);
+        toast.success('Listening... Speak now');
+      } catch (error) {
+        console.error('Error starting recognition:', error);
+        toast.error('Failed to start voice recognition');
+      }
+    }
+  };
+
+  const speakResponse = (text: string) => {
+    if (!synthRef.current) return;
+
+    synthRef.current.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.9;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+    };
+
+    utterance.onend = () => {
+      setIsSpeaking(false);
+    };
+
+    utterance.onerror = (error) => {
+      console.error('Speech synthesis error:', error);
+      setIsSpeaking(false);
+    };
+
+    synthRef.current.speak(utterance);
+  };
+
+  const stopSpeaking = () => {
+    if (synthRef.current) {
+      synthRef.current.cancel();
+      setIsSpeaking(false);
     }
   };
 
@@ -251,20 +368,74 @@ export default function ChatBot({ context }: ChatBotProps) {
 
             {/* Input Area */}
             <div className="p-4 bg-white dark:bg-dark-accent border-t border-gray-200 dark:border-dark-secondary">
+              {/* Voice Status Indicator */}
+              {(isListening || isSpeaking) && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-3 flex items-center justify-center space-x-2"
+                >
+                  <div className="flex space-x-1">
+                    {[...Array(3)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="w-1 bg-highlight dark:bg-dark-highlight rounded-full"
+                        animate={{
+                          height: [8, 20, 8],
+                        }}
+                        transition={{
+                          duration: 0.5,
+                          repeat: Infinity,
+                          delay: i * 0.1,
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs text-highlight dark:text-dark-highlight font-medium">
+                    {isListening ? '🎤 Listening...' : '🔊 Speaking...'}
+                  </span>
+                  {isSpeaking && (
+                    <button
+                      onClick={stopSpeaking}
+                      className="text-xs text-gray-500 hover:text-red-500 transition-colors"
+                    >
+                      Stop
+                    </button>
+                  )}
+                </motion.div>
+              )}
+
               <div className="flex items-end space-x-2">
+                {/* Voice Input Button */}
+                {isVoiceSupported && (
+                  <button
+                    onClick={toggleVoiceInput}
+                    disabled={isTyping || isSpeaking}
+                    className={`p-3 rounded-xl transition-all ${
+                      isListening
+                        ? 'bg-red-500 text-white animate-pulse'
+                        : 'bg-gray-100 dark:bg-dark-secondary text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-background'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    aria-label={isListening ? 'Stop listening' : 'Start voice input'}
+                    title={isListening ? 'Stop listening' : 'Voice input'}
+                  >
+                    {isListening ? <MicOff size={20} /> : <Mic size={20} />}
+                  </button>
+                )}
+
                 <input
                   ref={inputRef}
                   type="text"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Type your message..."
-                  disabled={isTyping}
+                  placeholder={isListening ? 'Listening...' : 'Type your message...'}
+                  disabled={isTyping || isListening}
                   className="flex-1 input-field text-sm resize-none"
                 />
                 <button
                   onClick={sendMessage}
-                  disabled={!inputMessage.trim() || isTyping}
+                  disabled={!inputMessage.trim() || isTyping || isListening}
                   className="bg-highlight dark:bg-dark-highlight text-white p-3 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label="Send message"
                 >
@@ -272,7 +443,7 @@ export default function ChatBot({ context }: ChatBotProps) {
                 </button>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-                Powered by OpenAI GPT-4 • Press Enter to send
+                {isVoiceSupported ? '🎤 Voice enabled • ' : ''}Powered by OpenAI GPT-4 • Press Enter to send
               </p>
             </div>
           </motion.div>
