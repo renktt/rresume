@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className="scroll-smooth">
-      <body className="overflow-x-hidden">
+      <body>
         <ClientLayout>
           {children}
         </ClientLayout>

@@ -13,7 +13,7 @@ export default function ClientLayout({
   return (
     <ThemeProvider>
       <Navigation />
-      <main className="pt-16 min-h-screen">
+      <main className="pt-16">
         {children}
       </main>
       <ChatBot />
