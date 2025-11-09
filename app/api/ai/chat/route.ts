@@ -1,63 +1,42 @@
 import { NextResponse } from 'next/server';
 import { RENANTE_PROFILE } from '@/lib/digital-twin-personality';
 import { vectorHelpers } from '@/lib/vector';
-import { generateDigitalTwinResponse } from '@/lib/groq';
+import { generateRAGResponse, storeConversationForRAG, retrieveRelevantContext } from '@/lib/rag-system';
 
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
 }
 
-// Groq-powered response generator
-async function generateContextualResponse(message: string, context?: string, conversationHistory?: any[]): Promise<string> {
-  // Fetch real data from Redis database
-  let resumeData: any[] = [];
-  let projectsData: any[] = [];
-  
+// RAG-powered response generator with semantic search
+async function generateContextualResponse(message: string, context?: string, conversationHistory?: any[], sessionId?: string): Promise<{ response: string; sources: any[]; retrievalInfo: string }> {
   try {
-    const [resume, projects] = await Promise.all([
-      vectorHelpers.getResume(),
-      vectorHelpers.getProjects()
-    ]);
+    // Use RAG system for intelligent retrieval and generation
+    const ragResponse = await generateRAGResponse(
+      message,
+      sessionId || 'default',
+      {
+        includeConversationHistory: true,
+        maxTokens: 800,
+        temperature: 0.7,
+      }
+    );
     
-    resumeData = Array.isArray(resume) ? resume : [];
-    projectsData = Array.isArray(projects) ? projects : [];
-    
-    // Sort resume by section and order
-    resumeData.sort((a, b) => {
-      if (a.section !== b.section) return a.section.localeCompare(b.section);
-      return a.order - b.order;
-    });
-    // Sort projects by createdAt descending
-    projectsData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return {
+      response: ragResponse.answer,
+      sources: ragResponse.sources,
+      retrievalInfo: ragResponse.context,
+    };
   } catch (error) {
-    console.log('Database fetch error:', error);
-  }
-
-  // Convert conversation history to proper format
-  const chatHistory: ChatMessage[] = (conversationHistory || [])
-    .filter((msg: any) => msg.role && msg.content)
-    .map((msg: any) => ({
-      role: msg.role as 'system' | 'user' | 'assistant',
-      content: msg.content,
-    }));
-
-  // Generate response using Groq AI
-  try {
-    const response = await generateDigitalTwinResponse(message, {
-      conversationHistory: chatHistory,
-      resumeData,
-      projectsData,
-      personalityProfile: RENANTE_PROFILE,
-    });
+    console.error('RAG system error:', error);
     
-    return response;
-  } catch (error) {
-    console.error('Groq AI error:', error);
-    // Fallback to basic response if Groq fails
-    return `I apologize, but I'm having trouble processing your request at the moment. I'm ${RENANTE_PROFILE.name}'s Digital Twin, and I'd be happy to answer questions about skills, projects, experience, or how to get in touch. Please try asking again or rephrase your question.`;
+    // Fallback to basic response if RAG fails
+    return {
+      response: `I apologize, but I'm having trouble accessing my knowledge base at the moment. I'm ${RENANTE_PROFILE.name}'s Digital Twin, and I'd be happy to answer questions about skills, projects, experience, or how to get in touch. Please try asking again.`,
+      sources: [],
+      retrievalInfo: 'Error in retrieval',
+    };
   }
-  
 }
 
 export async function POST(req: Request) {
@@ -72,37 +51,28 @@ export async function POST(req: Request) {
       );
     }
 
-    // Generate AI-powered response with conversation history
-    const response = await generateContextualResponse(message, context, conversationHistory);
+    // Generate RAG-powered response with semantic search
+    const currentSessionId = sessionId || 'default';
+    const ragResult = await generateContextualResponse(message, context, conversationHistory, currentSessionId);
 
-    // Store in Vector memory
+    // Store conversation in Vector memory for future RAG retrieval
     try {
-      const currentSessionId = sessionId || 'default';
-      
-      // Store user message
-      await vectorHelpers.addChatMessage(currentSessionId, {
-        role: 'user',
-        content: message,
-      });
-
-      // Store assistant response
-      await vectorHelpers.addChatMessage(currentSessionId, {
-        role: 'assistant',
-        content: response,
-      });
-
-      // Store in AI memory for context
-      await vectorHelpers.addAiMemory(currentSessionId, {
-        topic: 'chat',
-        content: `User: ${message}\nAssistant: ${response}`,
-      });
+      const retrievalContext = await retrieveRelevantContext(message, currentSessionId);
+      await storeConversationForRAG(
+        currentSessionId,
+        message,
+        ragResult.response,
+        retrievalContext
+      );
     } catch (memoryError) {
       console.log('Memory storage error:', memoryError);
     }
 
     return NextResponse.json({
-      response,
-      conversationId: sessionId || 'default',
+      response: ragResult.response,
+      sources: ragResult.sources,
+      retrievalInfo: ragResult.retrievalInfo,
+      conversationId: currentSessionId,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {

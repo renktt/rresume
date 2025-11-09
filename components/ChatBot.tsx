@@ -9,6 +9,13 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  sources?: Array<{
+    type: 'resume' | 'project' | 'memory';
+    title: string;
+    content: string;
+    relevance: number;
+  }>;
+  retrievalInfo?: string;
 }
 
 interface ChatBotProps {
@@ -165,6 +172,8 @@ export default function ChatBot({ context }: ChatBotProps) {
         role: 'assistant',
         content: data.response,
         timestamp: new Date(),
+        sources: data.sources || [],
+        retrievalInfo: data.retrievalInfo,
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -327,7 +336,7 @@ export default function ChatBot({ context }: ChatBotProps) {
                   key={index}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex flex-col ${message.role === 'user' ? 'items-end' : 'items-start'}`}
                 >
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-3 ${
@@ -343,6 +352,36 @@ export default function ChatBot({ context }: ChatBotProps) {
                       {formatTime(message.timestamp)}
                     </p>
                   </div>
+                  
+                  {/* RAG Sources Display */}
+                  {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="mt-2 max-w-[80%] text-xs"
+                    >
+                      <details className="bg-gray-100 dark:bg-dark-secondary rounded-lg p-2">
+                        <summary className="cursor-pointer text-gray-600 dark:text-gray-400 font-medium">
+                          📚 Sources ({message.sources.length})
+                        </summary>
+                        <div className="mt-2 space-y-1">
+                          {message.sources.slice(0, 3).map((source, idx) => (
+                            <div key={idx} className="text-gray-700 dark:text-gray-300 p-2 bg-white dark:bg-dark-accent rounded">
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium">{source.type === 'resume' ? '📄' : '🚀'} {source.title}</span>
+                                <span className="text-xs text-gray-500">{(source.relevance * 100).toFixed(0)}%</span>
+                              </div>
+                            </div>
+                          ))}
+                          {message.retrievalInfo && (
+                            <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                              {message.retrievalInfo}
+                            </div>
+                          )}
+                        </div>
+                      </details>
+                    </motion.div>
+                  )}
                 </motion.div>
               ))}
 
