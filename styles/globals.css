@@ -23,6 +23,11 @@
   section {
     scroll-margin-top: 4rem;
   }
+
+  /* Optimize scroll behavior */
+  * {
+    scroll-behavior: smooth;
+  }
 }
 
 @layer components {
@@ -40,7 +45,7 @@
 
   .card {
     @apply bg-white rounded-custom shadow-lg p-6;
-    @apply transition-all duration-300 hover:shadow-xl;
+    @apply transition-all duration-300 hover:shadow-xl hover:scale-[1.02];
   }
 
   .dark .card {

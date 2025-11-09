@@ -13,11 +13,20 @@ export default function ClientLayout({
   return (
     <ThemeProvider>
       <Navigation />
-      <main className="pt-16">
+      <main>
         {children}
       </main>
       <ChatBot />
-      <Toaster position="bottom-right" />
+      <Toaster 
+        position="bottom-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#5D866C',
+            color: '#fff',
+          },
+        }}
+      />
     </ThemeProvider>
   );
 }
