@@ -7,11 +7,16 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-y: auto;
+    height: 100%;
   }
 
   body {
     @apply bg-background text-gray-900 font-sans;
     transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   body.dark {
