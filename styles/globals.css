@@ -7,10 +7,8 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-snap-type: y proximity;
     overflow-y: scroll;
     overflow-x: hidden;
-    scroll-padding-top: 0;
   }
 
   body {
@@ -25,40 +23,18 @@
     @apply bg-dark-background text-gray-100;
   }
 
-  /* Full-screen sections with snap behavior */
+  /* Continuous page sections */
   section {
-    scroll-snap-align: center;
-    min-height: 100vh;
+    min-height: auto;
     margin: 0 !important;
     padding: 0 !important;
     position: relative;
-    scroll-padding-top: 0;
-    transition: opacity 0.4s cubic-bezier(0.43, 0.13, 0.23, 0.96);
   }
 
-  /* Responsive adjustments for mobile */
-  @media (max-width: 768px) {
-    html {
-      scroll-snap-type: none;
-    }
-    
-    section {
-      scroll-snap-align: none;
-      min-height: 100vh;
-      height: auto;
-    }
-  }
-
-  /* Desktop: smooth snap */
-  @media (min-width: 769px) {
-    html {
-      scroll-snap-type: y proximity;
-    }
-    
-    section {
-      height: 100vh;
-      scroll-snap-align: center;
-    }
+  /* Responsive sections */
+  section {
+    min-height: auto;
+    height: auto;
   }
 
   /* Optimize scroll behavior */
@@ -198,16 +174,6 @@
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* GPU acceleration for smooth animations */
-section {
-  transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
-}
-
-.card, button {
-  transform: translateZ(0);
 }
 
 /* Scrollbar styling */
