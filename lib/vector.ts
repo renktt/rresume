@@ -82,19 +82,24 @@ export const vectorHelpers = {
   // Resume data operations
   async getResume(): Promise<ResumeItem[]> {
     try {
-      const results = await vectorIndex.query({
-        data: 'resume education experience skills certifications',
-        topK: 100,
-        includeMetadata: true,
-      });
+      // Use range to scan all vectors and filter for resume entries
+      const allData = await vectorIndex.range({ cursor: '0', limit: 1000, includeMetadata: true });
       
-      if (!results || results.length === 0) {
+      console.log('getResume - Total vectors:', allData?.vectors?.length || 0);
+      
+      if (!allData || !allData.vectors || allData.vectors.length === 0) {
+        console.log('getResume - No vectors found');
         return [];
       }
       
-      return results
-        .map(r => r.metadata as ResumeItem)
+      const resumeItems = allData.vectors
+        .filter(v => v && v.metadata && (v.metadata as any).section)
+        .map(v => v!.metadata as ResumeItem)
         .sort((a, b) => a.order - b.order);
+      
+      console.log('getResume - Found resume items:', resumeItems.length);
+      
+      return resumeItems;
     } catch (error) {
       console.error('Error fetching resume:', error);
       return [];
@@ -152,20 +157,24 @@ export const vectorHelpers = {
   // Projects data operations
   async getProjects(): Promise<Project[]> {
     try {
-      const results = await vectorIndex.query({
-        data: 'project application system website development software',
-        topK: 100,
-        includeMetadata: true,
-      });
+      // Use range to scan all vectors and filter for project entries
+      const allData = await vectorIndex.range({ cursor: '0', limit: 1000, includeMetadata: true });
       
-      if (!results || results.length === 0) {
+      console.log('getProjects - Total vectors:', allData?.vectors?.length || 0);
+      
+      if (!allData || !allData.vectors || allData.vectors.length === 0) {
+        console.log('getProjects - No vectors found');
         return [];
       }
       
-      return results
-        .map(r => r.metadata as Project)
-        .filter(p => p.title) // Filter out non-project items
+      const projects = allData.vectors
+        .filter(v => v && v.metadata && (v.metadata as any).title && (v.metadata as any).techStack)
+        .map(v => v!.metadata as Project)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      
+      console.log('getProjects - Found projects:', projects.length);
+      
+      return projects;
     } catch (error) {
       console.error('Error fetching projects:', error);
       return [];
@@ -223,20 +232,18 @@ export const vectorHelpers = {
   // Contact messages
   async getContactMessages(): Promise<ContactMessage[]> {
     try {
-      const results = await vectorIndex.query({
-        data: 'contact message inquiry email',
-        topK: 100,
-        includeMetadata: true,
-      });
+      const allData = await vectorIndex.range({ cursor: '0', limit: 1000, includeMetadata: true });
       
-      if (!results || results.length === 0) {
+      if (!allData || !allData.vectors || allData.vectors.length === 0) {
         return [];
       }
       
-      return results
-        .map(r => r.metadata as ContactMessage)
-        .filter(m => m.name && m.email) // Filter contact messages
+      const messages = allData.vectors
+        .filter(v => v && v.metadata && (v.metadata as any).name && (v.metadata as any).email)
+        .map(v => v!.metadata as ContactMessage)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      
+      return messages;
     } catch (error) {
       console.error('Error fetching contact messages:', error);
       return [];
@@ -266,20 +273,18 @@ export const vectorHelpers = {
   // AI Memory operations
   async getAiMemory(sessionId: string): Promise<AiMemory[]> {
     try {
-      const results = await vectorIndex.query({
-        data: `ai memory session ${sessionId}`,
-        topK: 50,
-        includeMetadata: true,
-      });
+      const allData = await vectorIndex.range({ cursor: '0', limit: 1000, includeMetadata: true });
       
-      if (!results || results.length === 0) {
+      if (!allData || !allData.vectors || allData.vectors.length === 0) {
         return [];
       }
       
-      return results
-        .map(r => r.metadata as AiMemory)
-        .filter(m => m.topic) // Filter AI memory items
+      const memories = allData.vectors
+        .filter(v => v && v.metadata && (v.metadata as any).topic && (v.metadata as any).id?.includes(sessionId))
+        .map(v => v!.metadata as AiMemory)
         .sort((a, b) => new Date(b.lastInteraction).getTime() - new Date(a.lastInteraction).getTime());
+      
+      return memories;
     } catch (error) {
       console.error('Error fetching AI memory:', error);
       return [];
@@ -309,20 +314,18 @@ export const vectorHelpers = {
   // Chat messages operations
   async getChatMessages(sessionId: string): Promise<ChatMessage[]> {
     try {
-      const results = await vectorIndex.query({
-        data: `chat messages session ${sessionId}`,
-        topK: 100,
-        includeMetadata: true,
-      });
+      const allData = await vectorIndex.range({ cursor: '0', limit: 1000, includeMetadata: true });
       
-      if (!results || results.length === 0) {
+      if (!allData || !allData.vectors || allData.vectors.length === 0) {
         return [];
       }
       
-      return results
-        .map(r => r.metadata as ChatMessage)
-        .filter(m => m.role) // Filter chat messages
+      const messages = allData.vectors
+        .filter(v => v && v.metadata && (v.metadata as any).role && (v.metadata as any).id?.includes(sessionId))
+        .map(v => v!.metadata as ChatMessage)
         .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+      
+      return messages;
     } catch (error) {
       console.error('Error fetching chat messages:', error);
       return [];
@@ -362,12 +365,59 @@ export const vectorHelpers = {
   // Semantic search across all data
   async semanticSearch(query: string, topK: number = 10) {
     try {
-      const results = await vectorIndex.query({
-        data: query,
-        topK,
-        includeMetadata: true,
-        includeData: true,
+      // Since our vector index doesn't have an embedding model configured,
+      // we'll fetch all data and do keyword-based matching in memory
+      const queryLower = query.toLowerCase();
+      const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
+      
+      // Fetch all data types
+      const [resume, projects] = await Promise.all([
+        this.getResume(),
+        this.getProjects(),
+      ]);
+      
+      // Combine all items with their searchable text
+      const allItems = [
+        ...resume.map(item => ({
+          id: item.id,
+          metadata: item,
+          text: `${item.section} ${item.title} ${item.description} ${item.dateRange}`.toLowerCase(),
+        })),
+        ...projects.map(item => ({
+          id: item.id,
+          metadata: item,
+          text: `${item.title} ${item.description} ${item.techStack}`.toLowerCase(),
+        })),
+      ];
+      
+      // Score each item based on keyword matches
+      const scoredItems = allItems.map(item => {
+        let score = 0;
+        
+        // Check for exact query match (highest score)
+        if (item.text.includes(queryLower)) {
+          score += 10;
+        }
+        
+        // Check for individual word matches
+        queryWords.forEach(word => {
+          if (item.text.includes(word)) {
+            score += 1;
+          }
+        });
+        
+        return {
+          id: item.id,
+          score,
+          metadata: item.metadata,
+        };
       });
+      
+      // Filter items with score > 0 and sort by score
+      const results = scoredItems
+        .filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, topK);
       
       return results;
     } catch (error) {

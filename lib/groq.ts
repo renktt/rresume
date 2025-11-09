@@ -7,7 +7,7 @@ const groq = new Groq({
 
 // Available Groq models
 export const GROQ_MODELS = {
-  LLAMA_3_70B: 'llama-3.1-70b-versatile', // Fast, versatile, great for chat
+  LLAMA_3_70B: 'llama-3.3-70b-versatile', // Fast, versatile, great for chat (updated from 3.1)
   LLAMA_3_8B: 'llama-3.1-8b-instant', // Ultra fast, instant responses
   MIXTRAL_8X7B: 'mixtral-8x7b-32768', // Large context window
   GEMMA_7B: 'gemma-7b-it', // Google's Gemma model
