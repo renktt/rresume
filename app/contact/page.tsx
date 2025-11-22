@@ -73,43 +73,53 @@ export default function ContactPage() {
                 Contact Information
               </h2>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <Mail className="text-highlight dark:text-dark-highlight flex-shrink-0 mt-1" size={24} />
-                  <div>
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">Email</h3>
-                    <a href="mailto:renantemarzan11@gmail.com" className="text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors">
+                  <div className="p-3 rounded-lg bg-accent dark:bg-dark-accent flex-shrink-0">
+                    <Mail className="text-highlight dark:text-dark-highlight" size={24} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-1">Email</h3>
+                    <a href="mailto:renantemarzan11@gmail.com" className="text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors break-all">
                       renantemarzan11@gmail.com
                     </a>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <Phone className="text-highlight dark:text-dark-highlight flex-shrink-0 mt-1" size={24} />
-                  <div>
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">Phone</h3>
+                  <div className="p-3 rounded-lg bg-accent dark:bg-dark-accent flex-shrink-0">
+                    <Phone className="text-highlight dark:text-dark-highlight" size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-1">Phone</h3>
                     <a href="tel:+639662253398" className="text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors">
                       +63 9662253398
                     </a>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <Linkedin className="text-highlight dark:text-dark-highlight flex-shrink-0 mt-1" size={24} />
-                  <div>
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">LinkedIn</h3>
-                    <a href="https://www.linkedin.com/in/renante-marzan-5245b639a/" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors break-all">
-                      linkedin.com/in/renante-marzan-5245b639a
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-4">Connect With Me</h3>
+                  <div className="flex items-center gap-4">
+                    <a 
+                      href="https://www.linkedin.com/in/renante-marzan-5245b639a/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-4 rounded-lg bg-accent dark:bg-dark-accent hover:bg-highlight hover:dark:bg-dark-highlight transition-all duration-200 group flex items-center justify-center"
+                      title="LinkedIn Profile"
+                      aria-label="LinkedIn Profile"
+                    >
+                      <Linkedin className="text-highlight dark:text-dark-highlight group-hover:text-white" size={28} />
                     </a>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <Facebook className="text-highlight dark:text-dark-highlight flex-shrink-0 mt-1" size={24} />
-                  <div>
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">Facebook</h3>
-                    <a href="https://www.facebook.com/renante.marzan.12" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors break-all">
-                      facebook.com/renante.marzan.12
+                    <a 
+                      href="https://www.facebook.com/renante.marzan.12" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-4 rounded-lg bg-accent dark:bg-dark-accent hover:bg-highlight hover:dark:bg-dark-highlight transition-all duration-200 group flex items-center justify-center"
+                      title="Facebook Profile"
+                      aria-label="Facebook Profile"
+                    >
+                      <Facebook className="text-highlight dark:text-dark-highlight group-hover:text-white" size={28} />
                     </a>
                   </div>
                 </div>
