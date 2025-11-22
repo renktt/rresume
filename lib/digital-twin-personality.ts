@@ -67,7 +67,10 @@ export const RENANTE_PROFILE = {
   name: 'Renante Misador Marzan',
   title: 'BSIT-4 Student | Full Stack Developer',
   specialization: 'Website Development & Full Stack Development',
-  email: 'renante.marzan@example.com',
+  email: 'renantemarzan11@gmail.com',
+  phone: '+63 9662253398',
+  linkedin: 'https://www.linkedin.com/in/renante-marzan-5245b639a/',
+  facebook: 'https://www.facebook.com/renante.marzan.12',
   
   skills: {
     frontend: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],

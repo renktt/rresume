@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import EnhancedVoiceAI from '@/components/EnhancedVoiceAI';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Linkedin, Facebook } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function ContactPage() {
@@ -78,7 +78,9 @@ export default function ContactPage() {
                   <Mail className="text-highlight dark:text-dark-highlight flex-shrink-0 mt-1" size={24} />
                   <div>
                     <h3 className="font-semibold text-gray-800 dark:text-gray-200">Email</h3>
-                    <p className="text-gray-600 dark:text-gray-400">renante.marzan@example.com</p>
+                    <a href="mailto:renantemarzan11@gmail.com" className="text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors">
+                      renantemarzan11@gmail.com
+                    </a>
                   </div>
                 </div>
 
@@ -86,18 +88,29 @@ export default function ContactPage() {
                   <Phone className="text-highlight dark:text-dark-highlight flex-shrink-0 mt-1" size={24} />
                   <div>
                     <h3 className="font-semibold text-gray-800 dark:text-gray-200">Phone</h3>
-                    <p className="text-gray-600 dark:text-gray-400">+63 XXX XXX XXXX</p>
+                    <a href="tel:+639662253398" className="text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors">
+                      +63 9662253398
+                    </a>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <MapPin className="text-highlight dark:text-dark-highlight flex-shrink-0 mt-1" size={24} />
+                  <Linkedin className="text-highlight dark:text-dark-highlight flex-shrink-0 mt-1" size={24} />
                   <div>
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">Location</h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Saint Paul University Philippines<br />
-                      Philippines
-                    </p>
+                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">LinkedIn</h3>
+                    <a href="https://www.linkedin.com/in/renante-marzan-5245b639a/" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors break-all">
+                      linkedin.com/in/renante-marzan-5245b639a
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <Facebook className="text-highlight dark:text-dark-highlight flex-shrink-0 mt-1" size={24} />
+                  <div>
+                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">Facebook</h3>
+                    <a href="https://www.facebook.com/renante.marzan.12" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors break-all">
+                      facebook.com/renante.marzan.12
+                    </a>
                   </div>
                 </div>
               </div>

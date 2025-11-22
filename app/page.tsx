@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { 
   User, GraduationCap, Code, Heart, Download, 
   Briefcase, Award, ExternalLink, Github,
-  Mail, Phone, MapPin, Send, ChevronDown
+  Mail, Phone, MapPin, Send, ChevronDown, Linkedin, Facebook
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import toast from 'react-hot-toast';
@@ -457,7 +457,9 @@ export default function HomePage() {
                       <Mail className="text-highlight dark:text-dark-highlight" size={20} />
                       <div>
                         <p className="text-sm font-semibold">Email</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">renante.marzan@example.com</p>
+                        <a href="mailto:renantemarzan11@gmail.com" className="text-sm text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors">
+                          renantemarzan11@gmail.com
+                        </a>
                       </div>
                     </div>
 
@@ -465,15 +467,29 @@ export default function HomePage() {
                       <Phone className="text-highlight dark:text-dark-highlight" size={20} />
                       <div>
                         <p className="text-sm font-semibold">Phone</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">+63 XXX XXX XXXX</p>
+                        <a href="tel:+639662253398" className="text-sm text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors">
+                          +63 9662253398
+                        </a>
                       </div>
                     </div>
 
                     <div className="flex items-center space-x-3">
-                      <MapPin className="text-highlight dark:text-dark-highlight" size={20} />
+                      <Linkedin className="text-highlight dark:text-dark-highlight" size={20} />
                       <div>
-                        <p className="text-sm font-semibold">Location</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Philippines</p>
+                        <p className="text-sm font-semibold">LinkedIn</p>
+                        <a href="https://www.linkedin.com/in/renante-marzan-5245b639a/" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors">
+                          linkedin.com/in/renante-marzan
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <Facebook className="text-highlight dark:text-dark-highlight" size={20} />
+                      <div>
+                        <p className="text-sm font-semibold">Facebook</p>
+                        <a href="https://www.facebook.com/renante.marzan.12" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 dark:text-gray-400 hover:text-highlight dark:hover:text-dark-highlight transition-colors">
+                          facebook.com/renante.marzan.12
+                        </a>
                       </div>
                     </div>
                   </div>
