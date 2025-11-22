@@ -195,13 +195,20 @@ export default function HomePage() {
             </div>
 
             <div className="pt-4">
-              <a
-                href="#about"
+              <button
+                onClick={() => {
+                  const element = document.getElementById('digital-twin');
+                  if (element) {
+                    const yOffset = -80;
+                    const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                  }
+                }}
                 className="btn-primary inline-flex items-center space-x-2 px-8 py-3.5 text-base font-medium shadow-lg hover:shadow-xl"
               >
                 <span>Meet My Digital Twin</span>
                 <ChevronDown size={20} />
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -289,7 +296,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="space-y-3">
-                    {groupedData[section].map((item) => (
+                    {groupedData[section].map((item: ResumeItem) => (
                       <div key={item.id} className="card">
                         <div className="flex justify-between items-start mb-2">
                           <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
