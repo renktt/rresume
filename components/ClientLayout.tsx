@@ -3,6 +3,7 @@
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import Navigation from '@/components/Navigation';
 import ChatBot from '@/components/ChatBot';
+import ProtectedFeature from '@/components/ProtectedFeature';
 import { Toaster } from 'react-hot-toast';
 
 export default function ClientLayout({
@@ -16,7 +17,9 @@ export default function ClientLayout({
       <main>
         {children}
       </main>
-      <ChatBot />
+      <ProtectedFeature featureName="the AI Chatbot">
+        <ChatBot />
+      </ProtectedFeature>
       <Toaster 
         position="bottom-right"
         toastOptions={{

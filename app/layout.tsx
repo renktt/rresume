@@ -1,4 +1,5 @@
 import ClientLayout from '@/components/ClientLayout';
+import AuthProvider from '@/components/AuthProvider';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
 
@@ -15,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="scroll-smooth">
       <body>
-        <ClientLayout>
-          {children}
-        </ClientLayout>
+        <AuthProvider>
+          <ClientLayout>
+            {children}
+          </ClientLayout>
+        </AuthProvider>
       </body>
     </html>
   );

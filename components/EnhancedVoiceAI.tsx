@@ -37,6 +37,8 @@ export default function EnhancedVoiceAI({
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationFrameRef = useRef<number>();
+  const processingRef = useRef(false);
+  const processingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Initialize speech recognition
@@ -49,29 +51,84 @@ export default function EnhancedVoiceAI({
       }
 
       recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
+      recognitionRef.current.continuous = true;
       recognitionRef.current.interimResults = true;
       recognitionRef.current.lang = 'en-US';
+      recognitionRef.current.maxAlternatives = 1;
+
+      recognitionRef.current.onstart = () => {
+        console.log('Recognition started');
+        setIsListening(true);
+      };
 
       recognitionRef.current.onresult = (event: any) => {
-        const current = event.resultIndex;
-        const transcriptText = event.results[current][0].transcript;
-        setTranscript(transcriptText);
+        console.log('Recognition result received');
+        let finalTranscript = '';
+        let interimTranscript = '';
 
-        if (event.results[current].isFinal) {
-          handleVoiceInput(transcriptText);
+        for (let i = 0; i < event.results.length; i++) {
+          const transcriptText = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcriptText + ' ';
+          } else {
+            interimTranscript += transcriptText;
+          }
+        }
+
+        // Show real-time transcript (interim + final)
+        const displayTranscript = (finalTranscript + interimTranscript).trim();
+        setTranscript(displayTranscript);
+        console.log('Transcript update:', displayTranscript, 'Has final:', !!finalTranscript.trim());
+
+        // In continuous mode, collect all final results
+        // Only process when we have substantial final text
+        if (finalTranscript.trim().length > 0 && !processingRef.current) {
+          console.log('Got final transcript, will process:', finalTranscript.trim());
+          
+          // Clear any existing timeout
+          if (processingTimeoutRef.current) {
+            clearTimeout(processingTimeoutRef.current);
+          }
+          
+          // Use a small delay to allow for continuation of speech
+          // If user keeps talking, the timeout will be cleared
+          processingTimeoutRef.current = setTimeout(() => {
+            if (!processingRef.current && finalTranscript.trim()) {
+              console.log('Processing final transcript:', finalTranscript.trim());
+              processingRef.current = true;
+              handleVoiceInput(finalTranscript.trim());
+            }
+          }, 800); // Wait 800ms after final result to see if user continues
         }
       };
 
       recognitionRef.current.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
-        setIsListening(false);
-        if (event.error === 'not-allowed') {
-          toast.error('Microphone access denied');
+        
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          toast.error('Microphone access denied. Please allow microphone access.');
+          setIsListening(false);
+          processingRef.current = false;
+        } else if (event.error === 'audio-capture') {
+          toast.error('No microphone detected. Please connect a microphone.');
+          setIsListening(false);
+          processingRef.current = false;
+        } else if (event.error === 'no-speech') {
+          console.log('No speech detected yet, continuing to listen...');
+          // In continuous mode, this is normal - keep listening
+        } else if (event.error === 'aborted') {
+          console.log('Recognition stopped by user');
+          processingRef.current = false;
+        } else if (event.error === 'network') {
+          console.log('Network error, will retry...');
+          // Don't show error toast for transient network issues
+        } else {
+          console.error(`Unhandled recognition error: ${event.error}`);
         }
       };
 
       recognitionRef.current.onend = () => {
+        console.log('Recognition ended, isListening:', isListening);
         setIsListening(false);
       };
 
@@ -85,8 +142,15 @@ export default function EnhancedVoiceAI({
     }
 
     return () => {
+      if (processingTimeoutRef.current) {
+        clearTimeout(processingTimeoutRef.current);
+      }
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          console.log('Error stopping recognition on cleanup');
+        }
       }
       if (synthRef.current) {
         synthRef.current.cancel();
@@ -113,9 +177,9 @@ export default function EnhancedVoiceAI({
   };
 
   const handleVoiceInput = async (transcriptText: string) => {
-    setIsListening(false);
+    // Stop listening while processing
+    stopListening();
     setIsProcessing(true);
-    setTranscript(transcriptText);
 
     try {
       // Add user message to history
@@ -124,28 +188,13 @@ export default function EnhancedVoiceAI({
         { role: 'user', content: transcriptText }
       ];
 
-      // Store in shared memory
-      try {
-        await fetch('/api/ai/memory', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sessionId,
-            role: 'user',
-            content: transcriptText,
-          }),
-        });
-      } catch (e) {
-        console.log('Memory storage skipped');
-      }
-
-      // Get AI response
+      // Get AI response using Groq
       const res = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: transcriptText,
-          context: context || 'Voice conversation',
+          context: context || 'Voice conversation with digital twin',
           sessionId,
           conversationHistory: updatedHistory,
         }),
@@ -169,23 +218,6 @@ export default function EnhancedVoiceAI({
       // Speak the response
       await speak(aiResponse);
 
-      // Store assistant response in memory
-      try {
-        await fetch('/api/ai/memory', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sessionId,
-            conversationType: 'voice',
-            message: transcriptText,
-            response: aiResponse,
-            context,
-          }),
-        });
-      } catch (e) {
-        console.log('Memory storage skipped');
-      }
-
     } catch (error) {
       console.error('Error processing voice input:', error);
       toast.error('Failed to process your message');
@@ -194,6 +226,16 @@ export default function EnhancedVoiceAI({
       await speak(errorMsg);
     } finally {
       setIsProcessing(false);
+      processingRef.current = false;
+      
+      // In continuous mode, recognition should still be running
+      // Only restart if it somehow stopped
+      setTimeout(() => {
+        if (!isListening && !isSpeaking) {
+          console.log('Recognition stopped unexpectedly, restarting...');
+          startListening();
+        }
+      }, 1500);
     }
   };
 
@@ -235,26 +277,77 @@ export default function EnhancedVoiceAI({
     });
   };
 
-  const toggleListening = () => {
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        console.log('Error stopping recognition');
+      }
+    }
+    setIsListening(false);
+  };
+
+  const startListening = async () => {
     if (!isSupported) {
       toast.error('Voice recognition is not supported in your browser');
       return;
     }
 
     if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-    } else {
-      try {
-        recognitionRef.current?.start();
-        setIsListening(true);
-        setTranscript('');
-        setResponse('');
-        updateAudioLevel();
-      } catch (error) {
-        console.error('Error starting recognition:', error);
-        toast.error('Failed to start voice recognition');
+      console.log('Already listening, skipping start');
+      return;
+    }
+
+    try {
+      // Stop any existing recognition first
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+          await new Promise(resolve => setTimeout(resolve, 100));
+        } catch (e) {
+          // Ignore if already stopped
+        }
       }
+
+      // Request microphone permission first
+      console.log('Requesting microphone permission...');
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log('Microphone permission granted');
+      
+      // Stop the stream immediately (we just needed permission)
+      stream.getTracks().forEach(track => track.stop());
+      
+      setTranscript('');
+      setResponse('');
+      processingRef.current = false;
+      
+      // Start recognition
+      console.log('Starting speech recognition...');
+      recognitionRef.current?.start();
+      setIsListening(true);
+      updateAudioLevel();
+      console.log('Voice recognition started in continuous mode');
+    } catch (error: any) {
+      console.error('Error starting recognition:', error);
+      if (error.name === 'NotAllowedError') {
+        toast.error('Microphone access denied. Please allow microphone access in your browser.');
+      } else if (error.name === 'NotFoundError') {
+        toast.error('No microphone found. Please connect a microphone.');
+      } else if (error.message?.includes('already started')) {
+        console.log('Recognition already running, setting state');
+        setIsListening(true);
+      } else {
+        toast.error('Failed to start voice recognition. Please try again.');
+      }
+    }
+  };
+
+  const toggleListening = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
     }
   };
 

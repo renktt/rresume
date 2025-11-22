@@ -1,6 +1,8 @@
 import { vectorHelpers } from '@/lib/vector';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const resumeData = await vectorHelpers.getResume();

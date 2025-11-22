@@ -12,6 +12,7 @@ import jsPDF from 'jspdf';
 import toast from 'react-hot-toast';
 import ChatBot from '@/components/ChatBot';
 import EnhancedVoiceAI from '@/components/EnhancedVoiceAI';
+import ProtectedFeature from '@/components/ProtectedFeature';
 
 interface ResumeItem {
   id: number;
@@ -496,48 +497,53 @@ export default function HomePage() {
 
             {/* AI Interface */}
             <div className="max-w-4xl mx-auto mb-12">
-              {digitalTwinMode === 'chat' ? (
-                <div className="card">
-                  <div className="mb-6">
-                    <h3 className="text-xl font-bold text-highlight dark:text-dark-highlight mb-2">
-                      Chat with My Digital Twin
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Ask me anything about my skills, experience, projects, or availability. 
-                      I can provide detailed information and help you get to know my work better.
-                    </p>
-                  </div>
-                  <ChatBot context="Homepage digital twin section. Provide comprehensive information about Renante's professional background, technical skills, projects, and career goals." />
-                </div>
-              ) : (
-                <div className="card">
-                  <div className="mb-6">
-                    <h3 className="text-xl font-bold text-highlight dark:text-dark-highlight mb-2">
-                      Talk to My Digital Twin
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      Click the microphone button to start a voice conversation. 
-                      My digital twin will listen to your questions and respond with voice.
-                    </p>
-                    <div className="bg-accent dark:bg-dark-accent rounded-lg p-4">
-                      <p className="text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200">💡 Tips:</p>
-                      <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                        <li>• Speak clearly and at a normal pace</li>
-                        <li>• Ask one question at a time</li>
-                        <li>• Wait for the response before asking another question</li>
-                      </ul>
+              <ProtectedFeature featureName="the AI Digital Twin">
+                {digitalTwinMode === 'chat' ? (
+                  <div className="card">
+                    <div className="mb-6">
+                      <h3 className="text-xl font-bold text-highlight dark:text-dark-highlight mb-2">
+                        Chat with My Digital Twin
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        Ask me anything about my skills, experience, projects, or availability. 
+                        I can provide detailed information and help you get to know my work better.
+                      </p>
                     </div>
-                  </div>
-                  <div className="flex justify-center">
-                    <EnhancedVoiceAI
-                      greeting="Hello! I'm Renante's digital twin. You can ask me about his skills, experience, projects, or how to get in touch. What would you like to know?"
-                      context="Homepage digital twin section. Provide comprehensive information about Renante's professional background, technical skills, projects, and contact information."
-                      buttonText="Start Voice Conversation"
-                      sessionId="homepage_digital_twin"
+                    <ChatBot 
+                      context="Homepage digital twin section. Provide comprehensive information about Renante's professional background, technical skills, projects, and career goals." 
+                      inline={true} 
                     />
                   </div>
-                </div>
-              )}
+                ) : (
+                  <div className="card">
+                    <div className="mb-6">
+                      <h3 className="text-xl font-bold text-highlight dark:text-dark-highlight mb-2">
+                        Talk to My Digital Twin
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 mb-4">
+                        Click the microphone button to start a voice conversation. 
+                        My digital twin will listen to your questions and respond with voice.
+                      </p>
+                      <div className="bg-accent dark:bg-dark-accent rounded-lg p-4">
+                        <p className="text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200">💡 Tips:</p>
+                        <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                          <li>• Speak clearly and at a normal pace</li>
+                          <li>• Ask one question at a time</li>
+                          <li>• Wait for the response before asking another question</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="flex justify-center">
+                      <EnhancedVoiceAI
+                        greeting="Hello! I'm Renante's digital twin. You can ask me about his skills, experience, projects, or how to get in touch. What would you like to know?"
+                        context="Homepage digital twin section. Provide comprehensive information about Renante's professional background, technical skills, projects, and contact information."
+                        buttonText="Start Voice Conversation"
+                        sessionId="homepage_digital_twin"
+                      />
+                    </div>
+                  </div>
+                )}
+              </ProtectedFeature>
             </div>
 
             {/* Features */}

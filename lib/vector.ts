@@ -1,9 +1,29 @@
 import { Index } from '@upstash/vector';
 
-// Initialize Upstash Vector client
-export const vectorIndex = new Index({
-  url: process.env.UPSTASH_VECTOR_REST_URL!,
-  token: process.env.UPSTASH_VECTOR_REST_TOKEN!,
+// Lazy initialization of Upstash Vector client to avoid build-time issues
+let _vectorIndex: Index | null = null;
+
+function getVectorIndex(): Index {
+  if (!_vectorIndex) {
+    const url = process.env.UPSTASH_VECTOR_REST_URL;
+    const token = process.env.UPSTASH_VECTOR_REST_TOKEN;
+    
+    if (!url || !token) {
+      throw new Error('UPSTASH_VECTOR_REST_URL and UPSTASH_VECTOR_REST_TOKEN environment variables are required');
+    }
+    
+    _vectorIndex = new Index({ url, token });
+  }
+  return _vectorIndex;
+}
+
+// Export a proxy that calls getVectorIndex() when accessed
+export const vectorIndex = new Proxy({} as Index, {
+  get(target, prop) {
+    const index = getVectorIndex();
+    const value = (index as any)[prop];
+    return typeof value === 'function' ? value.bind(index) : value;
+  }
 });
 
 // Simple vector creation function (creates a deterministic vector from text)
@@ -366,16 +386,16 @@ export const vectorHelpers = {
         this.getProjects(),
       ]);
       
-      // Combine all items with their searchable text
+      // Add type marker to metadata
       const allItems = [
         ...resume.map(item => ({
           id: item.id,
-          metadata: item,
+          metadata: { ...item, type: 'resume' as const },
           text: `${item.section} ${item.title} ${item.description} ${item.dateRange}`.toLowerCase(),
         })),
         ...projects.map(item => ({
           id: item.id,
-          metadata: item,
+          metadata: { ...item, type: 'project' as const },
           text: `${item.title} ${item.description} ${item.techStack}`.toLowerCase(),
         })),
       ];
@@ -392,13 +412,24 @@ export const vectorHelpers = {
         // Check for individual word matches
         queryWords.forEach(word => {
           if (item.text.includes(word)) {
-            score += 1;
+            score += 2;
           }
         });
         
+        // Boost score for section matches in resume items
+        if (item.metadata.type === 'resume') {
+          const section = (item.metadata as any).section?.toLowerCase();
+          if (queryLower.includes(section)) {
+            score += 5;
+          }
+        }
+        
+        // Normalize score to 0-1 range
+        const normalizedScore = Math.min(score / 20, 1);
+        
         return {
           id: item.id,
-          score,
+          score: normalizedScore,
           metadata: item.metadata,
         };
       });
@@ -408,6 +439,16 @@ export const vectorHelpers = {
         .filter(item => item.score > 0)
         .sort((a, b) => b.score - a.score)
         .slice(0, topK);
+      
+      // If no results found, return all items with lower scores for broader context
+      if (results.length === 0) {
+        console.log('No direct matches found, returning general context');
+        return allItems.map(item => ({
+          id: item.id,
+          score: 0.1,
+          metadata: item.metadata,
+        })).slice(0, topK);
+      }
       
       return results;
     } catch (error) {
