@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import { 
   User, GraduationCap, Code, Heart, Download, 
   Briefcase, Award, ExternalLink, Github,
-  Mail, Phone, MapPin, Send, ChevronDown, Linkedin, Facebook
+  Mail, Phone, MapPin, Send, ChevronDown, Linkedin, Facebook,
+  Brain, MessageSquare, Mic, Sparkles, Zap, Shield
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import toast from 'react-hot-toast';
@@ -434,6 +435,97 @@ export default function HomePage() {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      </Section>
+
+      {/* DIGITAL TWIN SECTION */}
+      <Section id="digital-twin">
+        <div className="w-full bg-gradient-to-br from-background via-accent to-background dark:from-dark-background dark:via-dark-accent dark:to-dark-background py-16">
+          <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+            <div className="text-center mb-12">
+              <div className="flex justify-center mb-6">
+                <div className="p-4 bg-gradient-to-br from-highlight to-secondary dark:from-dark-highlight dark:to-dark-secondary rounded-full">
+                  <Brain className="w-12 h-12 text-white" />
+                </div>
+              </div>
+              <h2 className="section-title mb-4">Meet My Digital Twin</h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                Powered by AI, my digital twin can answer questions about my experience, 
+                skills, and projects. Try it out!
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              {/* Chat Bot Card */}
+              <div className="card hover:shadow-xl transition-shadow duration-300">
+                <div className="text-center">
+                  <div className="inline-flex p-4 bg-accent dark:bg-dark-accent rounded-full mb-4">
+                    <MessageSquare className="w-8 h-8 text-highlight dark:text-dark-highlight" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-highlight dark:text-dark-highlight mb-3">
+                    Text Chat
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Chat with my AI digital twin through text. Ask about my skills, projects, or availability.
+                  </p>
+                  <a
+                    href="/digital-twin"
+                    className="btn-primary inline-flex items-center space-x-2"
+                  >
+                    <MessageSquare size={20} />
+                    <span>Start Chat</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Voice AI Card */}
+              <div className="card hover:shadow-xl transition-shadow duration-300">
+                <div className="text-center">
+                  <div className="inline-flex p-4 bg-accent dark:bg-dark-accent rounded-full mb-4">
+                    <Mic className="w-8 h-8 text-highlight dark:text-dark-highlight" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-highlight dark:text-dark-highlight mb-3">
+                    Voice Chat
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Talk to my AI twin with your voice. Get real-time spoken responses to your questions.
+                  </p>
+                  <a
+                    href="/digital-twin"
+                    className="btn-primary inline-flex items-center space-x-2"
+                  >
+                    <Mic size={20} />
+                    <span>Start Voice Chat</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="text-center p-6 bg-white/50 dark:bg-dark-accent/50 rounded-lg backdrop-blur-sm">
+                <Sparkles className="w-8 h-8 text-highlight dark:text-dark-highlight mx-auto mb-3" />
+                <h4 className="font-semibold mb-2">AI-Powered</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Built with Groq AI and RAG technology
+                </p>
+              </div>
+              <div className="text-center p-6 bg-white/50 dark:bg-dark-accent/50 rounded-lg backdrop-blur-sm">
+                <Zap className="w-8 h-8 text-highlight dark:text-dark-highlight mx-auto mb-3" />
+                <h4 className="font-semibold mb-2">Real-Time</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Get instant responses to your questions
+                </p>
+              </div>
+              <div className="text-center p-6 bg-white/50 dark:bg-dark-accent/50 rounded-lg backdrop-blur-sm">
+                <Shield className="w-8 h-8 text-highlight dark:text-dark-highlight mx-auto mb-3" />
+                <h4 className="font-semibold mb-2">Privacy First</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Your conversations are secure
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </Section>

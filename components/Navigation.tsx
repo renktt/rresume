@@ -9,7 +9,7 @@ const navItems = [
   { name: 'About', href: '#about' },
   { name: 'Resume', href: '#resume' },
   { name: 'Projects', href: '#projects' },
-  { name: 'Digital Twin', href: '/digital-twin', external: true },
+  { name: 'Digital Twin', href: '#digital-twin' },
   { name: 'Contact', href: '#contact' },
 ];
 
