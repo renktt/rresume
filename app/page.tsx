@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import toast from 'react-hot-toast';
+import ChatBot from '@/components/ChatBot';
+import EnhancedVoiceAI from '@/components/EnhancedVoiceAI';
 
 interface ResumeItem {
   id: number;
@@ -45,9 +47,10 @@ function Section({ children, id }: { children: React.ReactNode; id: string }) {
 }
 
 export default function HomePage() {
-  const [resumeData, setResumeData] = useState<ResumeItem[]>([]);
+  const [resume, setResume] = useState<ResumeItem[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [digitalTwinMode, setDigitalTwinMode] = useState<'chat' | 'voice'>('chat');
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProjectsLoaded, setIsProjectsLoaded] = useState(false);
@@ -67,7 +70,7 @@ export default function HomePage() {
     try {
       const res = await fetch('/api/resume');
       const data = await res.json();
-      if (Array.isArray(data)) setResumeData(data);
+      if (Array.isArray(data)) setResume(data);
     } catch (error) {
       console.error('Error fetching resume:', error);
     }
@@ -99,7 +102,7 @@ export default function HomePage() {
 
     const sections = ['education', 'skills', 'experience', 'certifications'];
     sections.forEach(section => {
-      const items = resumeData.filter(item => item.section.toLowerCase() === section);
+      const items = resume.filter(item => item.section.toLowerCase() === section);
       if (items.length > 0) {
         doc.setFontSize(16);
         doc.text(section.charAt(0).toUpperCase() + section.slice(1), 20, yPos);
@@ -150,7 +153,7 @@ export default function HomePage() {
     }
   };
 
-  const groupedData = resumeData.reduce((acc, item) => {
+  const groupedData = resume.reduce((acc: any, item) => {
     // Capitalize first letter of section for display
     const sectionKey = item.section.charAt(0).toUpperCase() + item.section.slice(1);
     if (!acc[sectionKey]) acc[sectionKey] = [];
@@ -441,88 +444,116 @@ export default function HomePage() {
 
       {/* DIGITAL TWIN SECTION */}
       <Section id="digital-twin">
-        <div className="w-full bg-gradient-to-br from-background via-accent to-background dark:from-dark-background dark:via-dark-accent dark:to-dark-background py-16">
+        <div className="w-full bg-background dark:bg-dark-background py-16">
           <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
             <div className="text-center mb-12">
               <div className="flex justify-center mb-6">
-                <div className="p-4 bg-gradient-to-br from-highlight to-secondary dark:from-dark-highlight dark:to-dark-secondary rounded-full">
+                <div className="p-4 bg-gradient-to-br from-highlight to-secondary dark:from-dark-highlight dark:to-dark-secondary rounded-full shadow-lg">
                   <Brain className="w-12 h-12 text-white" />
                 </div>
               </div>
               <h2 className="section-title mb-4">Meet My Digital Twin</h2>
               <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                 Powered by AI, my digital twin can answer questions about my experience, 
-                skills, and projects. Try it out!
+                skills, and projects. Choose your preferred way to interact!
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 mb-12">
-              {/* Chat Bot Card */}
-              <div className="card hover:shadow-xl transition-shadow duration-300">
-                <div className="text-center">
-                  <div className="inline-flex p-4 bg-accent dark:bg-dark-accent rounded-full mb-4">
-                    <MessageSquare className="w-8 h-8 text-highlight dark:text-dark-highlight" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-highlight dark:text-dark-highlight mb-3">
-                    Text Chat
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6">
-                    Chat with my AI digital twin through text. Ask about my skills, projects, or availability.
-                  </p>
-                  <a
-                    href="/digital-twin"
-                    className="btn-primary inline-flex items-center space-x-2"
-                  >
-                    <MessageSquare size={20} />
-                    <span>Start Chat</span>
-                  </a>
-                </div>
+            {/* Mode Selector */}
+            <div className="flex justify-center mb-8">
+              <div className="inline-flex bg-accent dark:bg-dark-accent rounded-lg p-1 shadow-md">
+                <button
+                  onClick={() => setDigitalTwinMode('chat')}
+                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${
+                    digitalTwinMode === 'chat'
+                      ? 'bg-highlight text-white dark:bg-dark-highlight shadow-md'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-background dark:hover:bg-dark-background'
+                  }`}
+                >
+                  <MessageSquare size={20} />
+                  <span>Text Chat</span>
+                </button>
+                <button
+                  onClick={() => setDigitalTwinMode('voice')}
+                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${
+                    digitalTwinMode === 'voice'
+                      ? 'bg-highlight text-white dark:bg-dark-highlight shadow-md'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-background dark:hover:bg-dark-background'
+                  }`}
+                >
+                  <Mic size={20} />
+                  <span>Voice Chat</span>
+                </button>
               </div>
+            </div>
 
-              {/* Voice AI Card */}
-              <div className="card hover:shadow-xl transition-shadow duration-300">
-                <div className="text-center">
-                  <div className="inline-flex p-4 bg-accent dark:bg-dark-accent rounded-full mb-4">
-                    <Mic className="w-8 h-8 text-highlight dark:text-dark-highlight" />
+            {/* AI Interface */}
+            <div className="max-w-4xl mx-auto mb-12">
+              {digitalTwinMode === 'chat' ? (
+                <div className="card">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-highlight dark:text-dark-highlight mb-2">
+                      Chat with My Digital Twin
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Ask me anything about my skills, experience, projects, or availability. 
+                      I can provide detailed information and help you get to know my work better.
+                    </p>
                   </div>
-                  <h3 className="text-2xl font-bold text-highlight dark:text-dark-highlight mb-3">
-                    Voice Chat
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6">
-                    Talk to my AI twin with your voice. Get real-time spoken responses to your questions.
-                  </p>
-                  <a
-                    href="/digital-twin"
-                    className="btn-primary inline-flex items-center space-x-2"
-                  >
-                    <Mic size={20} />
-                    <span>Start Voice Chat</span>
-                  </a>
+                  <ChatBot context="Homepage digital twin section. Provide comprehensive information about Renante's professional background, technical skills, projects, and career goals." />
                 </div>
-              </div>
+              ) : (
+                <div className="card">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-highlight dark:text-dark-highlight mb-2">
+                      Talk to My Digital Twin
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      Click the microphone button to start a voice conversation. 
+                      My digital twin will listen to your questions and respond with voice.
+                    </p>
+                    <div className="bg-accent dark:bg-dark-accent rounded-lg p-4">
+                      <p className="text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200">💡 Tips:</p>
+                      <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                        <li>• Speak clearly and at a normal pace</li>
+                        <li>• Ask one question at a time</li>
+                        <li>• Wait for the response before asking another question</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="flex justify-center">
+                    <EnhancedVoiceAI
+                      greeting="Hello! I'm Renante's digital twin. You can ask me about his skills, experience, projects, or how to get in touch. What would you like to know?"
+                      context="Homepage digital twin section. Provide comprehensive information about Renante's professional background, technical skills, projects, and contact information."
+                      buttonText="Start Voice Conversation"
+                      sessionId="homepage_digital_twin"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Features */}
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="text-center p-6 bg-white/50 dark:bg-dark-accent/50 rounded-lg backdrop-blur-sm">
+              <div className="card text-center">
                 <Sparkles className="w-8 h-8 text-highlight dark:text-dark-highlight mx-auto mb-3" />
-                <h4 className="font-semibold mb-2">AI-Powered</h4>
+                <h4 className="font-semibold mb-2 text-gray-800 dark:text-gray-200">AI-Powered</h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Built with Groq AI and RAG technology
+                  Built with Groq AI and RAG technology for accurate responses
                 </p>
               </div>
-              <div className="text-center p-6 bg-white/50 dark:bg-dark-accent/50 rounded-lg backdrop-blur-sm">
+              <div className="card text-center">
                 <Zap className="w-8 h-8 text-highlight dark:text-dark-highlight mx-auto mb-3" />
-                <h4 className="font-semibold mb-2">Real-Time</h4>
+                <h4 className="font-semibold mb-2 text-gray-800 dark:text-gray-200">Real-Time</h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Get instant responses to your questions
+                  Get instant responses through text or voice
                 </p>
               </div>
-              <div className="text-center p-6 bg-white/50 dark:bg-dark-accent/50 rounded-lg backdrop-blur-sm">
+              <div className="card text-center">
                 <Shield className="w-8 h-8 text-highlight dark:text-dark-highlight mx-auto mb-3" />
-                <h4 className="font-semibold mb-2">Privacy First</h4>
+                <h4 className="font-semibold mb-2 text-gray-800 dark:text-gray-200">Privacy First</h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Your conversations are secure
+                  Your conversations are secure and private
                 </p>
               </div>
             </div>
