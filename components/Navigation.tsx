@@ -9,6 +9,7 @@ const navItems = [
   { name: 'About', href: '#about' },
   { name: 'Resume', href: '#resume' },
   { name: 'Projects', href: '#projects' },
+  { name: 'Digital Twin', href: '/digital-twin', external: true },
   { name: 'Contact', href: '#contact' },
 ];
 
@@ -40,7 +41,12 @@ export default function Navigation() {
     return () => sections.forEach((section) => observer.unobserve(section));
   }, []);
 
-  const scrollToSection = (href: string) => {
+  const scrollToSection = (href: string, external?: boolean) => {
+    if (external) {
+      window.location.href = href;
+      setIsOpen(false);
+      return;
+    }
     const id = href.replace('#', '');
     const element = document.getElementById(id);
     if (element) {
@@ -66,11 +72,11 @@ export default function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => (
+            {navItems.map((item: any) => (
               <a
                 key={item.href}
                 href={item.href}
-                onClick={(e) => { e.preventDefault(); scrollToSection(item.href); }}
+                onClick={(e) => { e.preventDefault(); scrollToSection(item.href, item.external); }}
                 className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 cursor-pointer ${
                   activeSection === item.href.replace('#', '')
                     ? 'bg-highlight text-white dark:bg-dark-highlight'
@@ -119,11 +125,11 @@ export default function Navigation() {
       {isOpen && (
         <div className="md:hidden bg-white dark:bg-dark-accent shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {navItems.map((item) => (
+            {navItems.map((item: any) => (
               <a
                 key={item.href}
                 href={item.href}
-                onClick={(e) => { e.preventDefault(); scrollToSection(item.href); }}
+                onClick={(e) => { e.preventDefault(); scrollToSection(item.href, item.external); }}
                 className={`block px-3 py-2 rounded-lg font-medium transition-all duration-300 cursor-pointer ${
                   activeSection === item.href.replace('#', '')
                     ? 'bg-highlight text-white dark:bg-dark-highlight'
